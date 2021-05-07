@@ -1,39 +1,36 @@
 package baza
+
 /*
 packege incjalizujący połączenie z bazą danych
 */
 
-
-
 import (
 	"context"
-	"fmt"
-	"log"
 	"time"
+	"os"
+	log "github.com/sirupsen/logrus"
 
-	
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var DB mongo.Database 
-var Ctx, _ = context.WithTimeout(context.Background(), 10*time.Second)
-func connectToMongo () {//funkcja łączy się z bazą
+var DB mongo.Database
 
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://127.0.0.1:27017"))
+func ConnectToMongo() { //funkcja łączy się z bazą
+
+	client, err := mongo.NewClient(options.Client().ApplyURI(os.Getenv("URL_BAZA")))
 	if err != nil {
 		log.Fatal(err)
 	}
-	
-	err = client.Connect(Ctx)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	err = client.Connect(ctx)
 	if err != nil {
 		log.Fatal(err)
-	}else {
-		fmt.Println("connected...")
+	} else {
+		log.Info("connect to DB")
 	}
-	DB=*client.Database("praktyki")
-	
-}
-func init () {
-	connectToMongo()
+
+	DB = *client.Database("praktyki")
+
 }

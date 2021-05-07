@@ -1,30 +1,32 @@
 package serviceDB
+
 /*
 package do zarządzania bazą danych
 */
 import (
 	"context"
 	"errors"
-	"fmt"
-	"go.mongodb.org/mongo-driver/bson"
+	log "github.com/sirupsen/logrus"
 	"github.com/wojbog/praktyki_backend/baza"
 	"github.com/wojbog/praktyki_backend/person"
+	"go.mongodb.org/mongo-driver/bson"
+	
 )
 
 
-func InsertUser(user *person.Person ) error {//dodawanie użytkownika
-	if errv:=baza.DB.Collection("zadania").FindOne(context.Background(), bson.M{"email":user.Email}); errv !=nil {
-		return errors.New("konto istnieje")
+func InsertUser(ctx context.Context,user *person.Person ) error {//dodawanie użytkownika
+	per:=&person.Person{}
+	if errv:=baza.DB.Collection("users").FindOne(ctx, bson.M{"email":user.Email}).Decode(per); errv ==nil {
+		log.Info("account exists")
+		return errors.New("account exists")
 	} else {	
-	res,err:=baza.DB.Collection("users").InsertOne(context.Background(),user)
+	_,err:=baza.DB.Collection("users").InsertOne(ctx,user)
 	if err !=nil{
-		fmt.Println(err)
+		log.Fatal(err)
 		return err
 	}
-	fmt.Println(res.InsertedID)
 	
 
-	defer baza.DB.Client().Disconnect(baza.Ctx)
+	
 	return nil
-}
-}
+}}

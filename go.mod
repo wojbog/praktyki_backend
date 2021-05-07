@@ -8,5 +8,6 @@ require (
 	github.com/go-playground/validator v9.31.0+incompatible // indirect
 	github.com/gofiber/fiber/v2 v2.8.0 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
+	github.com/sirupsen/logrus v1.8.1 // indirect
 	go.mongodb.org/mongo-driver v1.5.2 // indirect
 )

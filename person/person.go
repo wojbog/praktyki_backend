@@ -6,8 +6,9 @@ import (
 	"errors"
 	"regexp"
 	"unicode"
-	"fmt"
+	
 	"github.com/go-playground/validator"
+	log "github.com/sirupsen/logrus"
 )
 
 type Person struct {//struktura użytkownika
@@ -63,11 +64,10 @@ func (p *Person) Validation() ([]string, error) {//walidacja struktury użytkown
 	validate.RegisterValidation("postCode", validatePostCode)
 	validate.RegisterValidation("password", validatePassword)
 	if err := validate.Struct(p); err != nil {
-		fmt.Println("blad validacji")
+		log.Info("validation error")
 		var TabErrors []string
 		for _, err := range err.(validator.ValidationErrors) {
 
-			fmt.Println(err.Field())
 			TabErrors = append(TabErrors, err.Field())
 		}
 		return TabErrors, errors.New("validation error")
