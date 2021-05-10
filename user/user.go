@@ -32,15 +32,15 @@ func SetUser(c *fiber.Ctx) error {//dodawanie użytkownika do bazy
 			"list":    tab})
 	}
 
-	if err:=serviceDB.InsertUser(c.Context(),p);err!=nil {//dodawanie do bazy
+	if str,err:=serviceDB.InsertUser(c.Context(),p);err!=nil {//dodawanie do bazy
 		log.Info(err.Error())
 		return c.Status(400).JSON(&fiber.Map{
 			"success": false,
 			"error": err.Error()})
-	}
-
+	} else {
+		log.Info("success add new user, id: " + str)
+		return c.Status(200).JSON(&fiber.Map{"success": true, "id": str})
+	}	
 	
-	log.Info("success")
-	return c.Status(200).JSON(&fiber.Map{"success": true})
 
 }

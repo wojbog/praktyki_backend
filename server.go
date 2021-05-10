@@ -5,11 +5,11 @@ import (
 	
 	"github.com/gofiber/fiber/v2"
 	"github.com/wojbog/praktyki_backend/user"
-	"github.com/wojbog/praktyki_backend/baza"
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {
-	baza.ConnectToMongo()
+	
 	app := fiber.New()
 
 	app.Get("/", func(c *fiber.Ctx) error {
@@ -18,6 +18,12 @@ func main() {
 
 	app.Post("/createUser",user.SetUser)//endpoint dodawania uzytkownika do bazy
 	
-	app.Listen(":"+os.Getenv("PORT"))
+	PORT:=os.Getenv("PORT")
+	if PORT != "" {
+		app.Listen(":"+PORT)
+	} else {
+		log.Panic("NO PORT")
+	}
+	
 	
 }

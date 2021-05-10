@@ -9,16 +9,16 @@ import (
 	"time"
 	"os"
 	log "github.com/sirupsen/logrus"
-
+	"fmt"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var DB mongo.Database
 
-func ConnectToMongo() { //funkcja łączy się z bazą
-
-	client, err := mongo.NewClient(options.Client().ApplyURI(os.Getenv("URL_BAZA")))
+func connectToMongo() { //funkcja łączy się z bazą
+	fmt.Println("elo: "+os.Getenv("MONGO_URL"))
+	client, err := mongo.NewClient(options.Client().ApplyURI(os.Getenv("MONGO_URL")))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -30,7 +30,15 @@ func ConnectToMongo() { //funkcja łączy się z bazą
 	} else {
 		log.Info("connect to DB")
 	}
+	DatabseName:=os.Getenv("MONGO_DB")
+	if DatabseName == ""{
+		DB = *client.Database("praktyki")
+	}else {
+		DB = *client.Database(DatabseName)
+	}
+	
 
-	DB = *client.Database("praktyki")
-
+}
+func init () {
+	connectToMongo()
 }
