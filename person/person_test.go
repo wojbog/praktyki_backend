@@ -75,7 +75,12 @@ func TestValidationStructTrue (t *testing.T) {
 
 func TestValidationStructFalse (t *testing.T) {
 	per:=[]Person{{"Andasd","asdasdP","asd.pooijk-asda@asdasd.pl@","asdasd","12a","ssdfsdfQWEWEQ","45-456","Wertyui9"},
-	{"ASDSSD3","asdasd","asd.pooijk-asda@asdasd.asdasd.asd-asd.pl","ASADDSA","12243","WEQQWEasdasd","00-000","W+-==9tt"}}
+	{"ASDSSD3","asdasd","asd.pooijk-asda@asdasd.asdasd.asd-asd.pl","ASADDSA","12243","WEQQWEasdasd","00-000","W+-==9tt"},
+	{"ASDSSDh","asdas9d","asd.pooijk-asda@asdasd.asdasd.asd-asd.pl","ASADDSA","12243","WEQQWEasdasd","00-000","W+-==9tt"},
+	{"ASDSSDl","asdasd","asd.pooijk-asda@asdasd.asdasd.asd-asd.pl","ASADDSA","----","WEQQWEasdasd","00-000","W+-==9tt"},
+	{"ASDSSDl","asdasd","asd.pooijk-asda@asdasd.asdasd.asd-asd.pl","ASADDSA","12243","WEQQWEa1441sdasd","00-000","W+-==9tt"},
+	{"ASDSSDl","asdasd","asd.pooijk-asda@asdasd.asdasd.asd-asd.pl","ASADDSA","12243","WEQQWEasdasd","000000","W+-==9tt"},
+	{"ASDSSDl","asdasd","asd.pooijk-asda@asdasd.asdasd.asd-asd.pl","ASADDSA","12243","WEQQWEasdasd","00-000","W+-=="}}
 	validate:= validator.New()
 	validate.RegisterValidation("postCode", validatePostCode)
 	validate.RegisterValidation("password", validatePassword)
