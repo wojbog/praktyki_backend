@@ -1,16 +1,19 @@
+//server route in app
 package server
 
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/wojbog/praktyki_backend/handlers"
-	
+	"github.com/wojbog/praktyki_backend/repository/user"
 )
 
-func Routing(app *fiber.App){
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World!")
-	})
+//Routing routes in app
+func Routing(app *fiber.App, col *user.Collection){
 
-	app.Post("/createUser", handlers.CreateUser)//endpoint dodawania uzytkownika do bazy
+	
+	//CreateUser endpoint add new user
+	app.Post("/createUser", handlers.CreateUser(col))
+
+
 }

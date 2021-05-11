@@ -1,4 +1,4 @@
-package person
+package service
 
 import (
 	"testing"
@@ -6,7 +6,10 @@ import (
 	
 )
 
-func TestValidatePasswordReturnFalseIfPasswordIsInvalid(t *testing.T) {
+//TestValidatePasswordReturnErrorIfPasswordIsValid 
+//get incorrect data
+//return error if func return true
+func TestValidatePasswordReturnErrorIfPasswordIsValid(t *testing.T) {
 	validate:= validator.New()
 	validate.RegisterValidation("password", validatePassword)
 	arr:=[]string{"Wojtekir","asdd","asdasdaq","12345678","Wojtekqw+_';\"["}
@@ -18,8 +21,10 @@ func TestValidatePasswordReturnFalseIfPasswordIsInvalid(t *testing.T) {
 	} 
 	
 }
-
-func TestValidatePasswordReturnTrueIfPasswordIsValid(t *testing.T) {
+//TestValidatePasswordReturnErrorIfPasswordIsInvalid
+//get correct data
+//return error if func return false
+func TestValidatePasswordReturnErrorIfPasswordIsInvalid(t *testing.T) {
 	validate:= validator.New()
 	validate.RegisterValidation("password", validatePassword)
 	arr:=[]string{"Wojtek9r","asDddfgdfg887","asdasdaqE4","12345678Q","Wojtekqw4"}
@@ -31,8 +36,10 @@ func TestValidatePasswordReturnTrueIfPasswordIsValid(t *testing.T) {
 	} 
 	
 }
-
-func TestValidatePostReturnFalseIfPasswordIsInvalid(t *testing.T) {
+//TestValidatePostReturnErrorIfPostCodeIsValid
+//get incorrect data
+//return error if func return true
+func TestValidatePostReturnErrorIfPostCodeIsValid(t *testing.T) {
 	validate:= validator.New()
 	validate.RegisterValidation("postCode", validatePostCode)
 	arr:=[]string{"aw-asd","123435","234-87","34-876h","32y768"}
@@ -44,8 +51,10 @@ func TestValidatePostReturnFalseIfPasswordIsInvalid(t *testing.T) {
 	} 
 	
 }
-
-func TestValidatePostReturnTrueIfPasswordIsValid(t *testing.T) {
+//TestValidatePostReturnErrorIfPostCodeIsInvalid
+//get correct data
+//return error if func return false
+func TestValidatePostReturnErrorIfPostCodeIsInvalid(t *testing.T) {
 	validate:= validator.New()
 	validate.RegisterValidation("postCode", validatePostCode)
 	arr:=[]string{"12-678","87-456","09-000","00-000","99-999"}
@@ -57,8 +66,10 @@ func TestValidatePostReturnTrueIfPasswordIsValid(t *testing.T) {
 	} 
 	
 }
-
-func TestValidationStructTrue(t *testing.T) {
+//TestValidationStructReturnErrorIfStructIsInvalid
+//get incorrect data
+//return error if func return true
+func TestValidationStructReturnErrorIfStructIsInvalid(t *testing.T) {
 	per:=[]Person{{"Andasd","asdasdP","asd.pooijk-asda@asdasd.pl","asdasd","12a","ssdfsdfQWEWEQ","45-456","Wertyui9"},
 	{"ASDSSD","asdasd","asd.pooijk-asda@asdasd.asdasd.asd-asd.pl","ASADDSA","12243","WEQQWEasdasd","00-000","W+-==9tt"}}
 	validate:= validator.New()
@@ -72,8 +83,10 @@ func TestValidationStructTrue(t *testing.T) {
 	}
 
 }
-
-func TestValidationStructFalse(t *testing.T) {
+//TestValidationStructReturnErrorIfStructIsValid
+//get correct data
+//return error if func return false
+func TestValidationStructReturnErrorIfStructIsValid(t *testing.T) {
 	per:=[]Person{{"Andasd","asdasdP","asd.pooijk-asda@asdasd.pl@","asdasd","12a","ssdfsdfQWEWEQ","45-456","Wertyui9"},
 	{"ASDSSD3","asdasd","asd.pooijk-asda@asdasd.asdasd.asd-asd.pl","ASADDSA","12243","WEQQWEasdasd","00-000","W+-==9tt"},
 	{"ASDSSDh","asdas9d","asd.pooijk-asda@asdasd.asdasd.asd-asd.pl","ASADDSA","12243","WEQQWEasdasd","00-000","W+-==9tt"},

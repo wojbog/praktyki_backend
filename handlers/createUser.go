@@ -1,38 +1,38 @@
+//handlers in pplication
 package handlers
-/*
-package użytkjownika:
--dodawanie do bazy
-*/
+
+
 import (
-	
-	
-	log "github.com/sirupsen/logrus"
 	"github.com/gofiber/fiber/v2"
+	log "github.com/sirupsen/logrus"
+	"github.com/wojbog/praktyki_backend/service"
 	"github.com/wojbog/praktyki_backend/repository/user"
-	"github.com/wojbog/praktyki_backend/repository/person"
 )
+//CreateUser add new user to datebase
+func CreateUser(col *user.Collection) func (c *fiber.Ctx) error {
 
-func CreateUser(c *fiber.Ctx) error {//dodawanie użytkownika do bazy
+	return func (c *fiber.Ctx) error {
 	
+	//p instance of user
+	p := new(service.Person)
 
-	p := new(person.Person)
-
-	if err := c.BodyParser(p); err != nil {//zamiana na strukturę
+	//convert to service.Person type 
+	if err := c.BodyParser(p); err != nil {
 		log.Info(err.Error())
 		return c.Status(400).JSON(&fiber.Map{
 			"success": false,
 			"error":   err.Error()})
 	}
-
-	if tab, errv := p.Validation(); errv != nil {//walidacja
+	//validation
+	if tab, errv := p.Validation(); errv != nil {
 		log.Info(errv.Error())
 		return c.Status(400).JSON(&fiber.Map{
 			"success": false,
 			"error":   errv.Error(),
 			"list":    tab})
 	}
-
-	if str,err:=user.InsertUser(c.Context(),p);err!=nil {//dodawanie do bazy
+	//add to datebase
+	if str,err:=col.InsertUser(c.Context(),p);err!=nil {//dodawanie do bazy
 		log.Info(err.Error())
 		return c.Status(400).JSON(&fiber.Map{
 			"success": false,
@@ -43,4 +43,4 @@ func CreateUser(c *fiber.Ctx) error {//dodawanie użytkownika do bazy
 	}	
 	
 
-}
+}}

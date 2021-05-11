@@ -1,7 +1,5 @@
-package person
-/*
-package użytkownika
-*/
+package service
+
 import (
 	"errors"
 	"regexp"
@@ -10,7 +8,7 @@ import (
 	"github.com/go-playground/validator"
 	log "github.com/sirupsen/logrus"
 )
-
+//Person type of new user
 type Person struct {//struktura użytkownika
 	Name      string `json:"name" validate:"required,alpha"`
 	Surname   string `json:"surname" validate:"required,alpha"`
@@ -21,9 +19,9 @@ type Person struct {//struktura użytkownika
 	Post_code string `json:"post_code" validate:"required,postCode"`
 	Pass      string `json:"pass" validate:"required,password"`
 }
-
-func validatePostCode(fl validator.FieldLevel) bool {//walidacja kodu pocztowego
-	//format: 00-000
+//validatePostCode validate PosteCode, correct format: 00-000
+func validatePostCode(fl validator.FieldLevel) bool {
+	
 	re := regexp.MustCompile(`^\d{2}-\d{3}$`)
 	matches := re.FindAllString(fl.Field().String(), -1)
 
@@ -33,9 +31,9 @@ func validatePostCode(fl validator.FieldLevel) bool {//walidacja kodu pocztowego
 
 	return true
 }
-
-func validatePassword(fl validator.FieldLevel) bool {//walidacja hasła
-	//min 8 znaków, 1 wielka litera, 1 numer
+//validatePassword validate Password, correct format: min 8 chars, min. 1 Capital letter,min. 1 number
+func validatePassword(fl validator.FieldLevel) bool {
+	
 	var number bool =false
 	var upper bool =false
 	size:=0
@@ -58,7 +56,7 @@ func validatePassword(fl validator.FieldLevel) bool {//walidacja hasła
 	}
 
 }
-
+//Validation validate Person struct
 func (p *Person) Validation() ([]string, error) {//walidacja struktury użytkownika
 	validate := validator.New()
 	validate.RegisterValidation("postCode", validatePostCode)
