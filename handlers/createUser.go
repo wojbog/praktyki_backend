@@ -1,4 +1,4 @@
-package user
+package handlers
 /*
 package użytkjownika:
 -dodawanie do bazy
@@ -8,11 +8,11 @@ import (
 	
 	log "github.com/sirupsen/logrus"
 	"github.com/gofiber/fiber/v2"
-	"github.com/wojbog/praktyki_backend/serviceDB"
-	"github.com/wojbog/praktyki_backend/person"
+	"github.com/wojbog/praktyki_backend/repository/user"
+	"github.com/wojbog/praktyki_backend/repository/person"
 )
 
-func SetUser(c *fiber.Ctx) error {//dodawanie użytkownika do bazy
+func CreateUser(c *fiber.Ctx) error {//dodawanie użytkownika do bazy
 	
 
 	p := new(person.Person)
@@ -32,7 +32,7 @@ func SetUser(c *fiber.Ctx) error {//dodawanie użytkownika do bazy
 			"list":    tab})
 	}
 
-	if str,err:=serviceDB.InsertUser(c.Context(),p);err!=nil {//dodawanie do bazy
+	if str,err:=user.InsertUser(c.Context(),p);err!=nil {//dodawanie do bazy
 		log.Info(err.Error())
 		return c.Status(400).JSON(&fiber.Map{
 			"success": false,

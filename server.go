@@ -2,21 +2,18 @@ package main
 
 import (
 	"os"
-	
 	"github.com/gofiber/fiber/v2"
-	"github.com/wojbog/praktyki_backend/user"
 	log "github.com/sirupsen/logrus"
+	"github.com/wojbog/praktyki_backend/server"
+
 )
 
 func main() {
 	
 	app := fiber.New()
-
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World!")
-	})
-
-	app.Post("/createUser",user.SetUser)//endpoint dodawania uzytkownika do bazy
+	
+	server.Routing(app)
+	
 	
 	PORT:=os.Getenv("PORT")
 	if PORT != "" {
