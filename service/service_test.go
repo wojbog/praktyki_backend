@@ -66,10 +66,10 @@ func TestValidatePostReturnErrorIfPostCodeIsInvalid(t *testing.T) {
 	} 
 	
 }
-//TestValidationStructReturnErrorIfStructIsInvalid
+//TestValidateStructReturnErrorIfStructIsInvalid
 //get incorrect data
 //return error if func return true
-func TestValidationStructReturnErrorIfStructIsInvalid(t *testing.T) {
+func TestValidateStructReturnErrorIfStructIsInvalid(t *testing.T) {
 	per:=[]Person{{"Andasd","asdasdP","asd.pooijk-asda@asdasd.pl","asdasd","12a","ssdfsdfQWEWEQ","45-456","Wertyui9"},
 	{"ASDSSD","asdasd","asd.pooijk-asda@asdasd.asdasd.asd-asd.pl","ASADDSA","12243","WEQQWEasdasd","00-000","W+-==9tt"}}
 	validate:= validator.New()
@@ -83,10 +83,10 @@ func TestValidationStructReturnErrorIfStructIsInvalid(t *testing.T) {
 	}
 
 }
-//TestValidationStructReturnErrorIfStructIsValid
+//TestValidateStructReturnErrorIfStructIsValid
 //get correct data
 //return error if func return false
-func TestValidationStructReturnErrorIfStructIsValid(t *testing.T) {
+func TestValidateStructReturnErrorIfStructIsValid(t *testing.T) {
 	per:=[]Person{{"Andasd","asdasdP","asd.pooijk-asda@asdasd.pl@","asdasd","12a","ssdfsdfQWEWEQ","45-456","Wertyui9"},
 	{"ASDSSD3","asdasd","asd.pooijk-asda@asdasd.asdasd.asd-asd.pl","ASADDSA","12243","WEQQWEasdasd","00-000","W+-==9tt"},
 	{"ASDSSDh","asdas9d","asd.pooijk-asda@asdasd.asdasd.asd-asd.pl","ASADDSA","12243","WEQQWEasdasd","00-000","W+-==9tt"},

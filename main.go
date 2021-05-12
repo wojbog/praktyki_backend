@@ -11,6 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/wojbog/praktyki_backend/repository/user"
+	"github.com/wojbog/praktyki_backend/service"
 )
 
 func main() {
@@ -45,7 +46,9 @@ func main() {
 	
 	col:=*db.Collection("users")
 
-	s:=user.NewCollection(&col)
+	userCol:=user.NewCollection(&col)
+
+	s:=service.NewService(userCol)
 
 	server.Routing(app,s)
 	
