@@ -2,11 +2,12 @@ package service
 
 import (
 	"testing"
+
 	"github.com/go-playground/validator"
-	
+	"github.com/wojbog/praktyki_backend/models"
 )
 
-//TestValidatePasswordReturnErrorIfPasswordIsValid 
+//TestValidatePasswordReturnErrorIfPasswordIsValid
 //get incorrect data
 //return error if func return true
 func TestValidatePasswordReturnErrorIfPasswordIsValid(t *testing.T) {
@@ -70,7 +71,7 @@ func TestValidatePostReturnErrorIfPostCodeIsInvalid(t *testing.T) {
 //get incorrect data
 //return error if func return true
 func TestValidateStructReturnErrorIfStructIsInvalid(t *testing.T) {
-	per:=[]Person{{"Andasd","asdasdP","asd.pooijk-asda@asdasd.pl","asdasd","12a","ssdfsdfQWEWEQ","45-456","Wertyui9"},
+	per:=[]models.NewUser{{"Andasd","asdasdP","asd.pooijk-asda@asdasd.pl","asdasd","12a","ssdfsdfQWEWEQ","45-456","Wertyui9"},
 	{"ASDSSD","asdasd","asd.pooijk-asda@asdasd.asdasd.asd-asd.pl","ASADDSA","12243","WEQQWEasdasd","00-000","W+-==9tt"}}
 	validate:= validator.New()
 	validate.RegisterValidation("postCode", validatePostCode)
@@ -87,7 +88,7 @@ func TestValidateStructReturnErrorIfStructIsInvalid(t *testing.T) {
 //get correct data
 //return error if func return false
 func TestValidateStructReturnErrorIfStructIsValid(t *testing.T) {
-	per:=[]Person{{"Andasd","asdasdP","asd.pooijk-asda@asdasd.pl@","asdasd","12a","ssdfsdfQWEWEQ","45-456","Wertyui9"},
+	per:=[]models.NewUser{{"Andasd","asdasdP","asd.pooijk-asda@asdasd.pl@","asdasd","12a","ssdfsdfQWEWEQ","45-456","Wertyui9"},
 	{"ASDSSD3","asdasd","asd.pooijk-asda@asdasd.asdasd.asd-asd.pl","ASADDSA","12243","WEQQWEasdasd","00-000","W+-==9tt"},
 	{"ASDSSDh","asdas9d","asd.pooijk-asda@asdasd.asdasd.asd-asd.pl","ASADDSA","12243","WEQQWEasdasd","00-000","W+-==9tt"},
 	{"ASDSSDl","asdasd","asd.pooijk-asda@asdasd.asdasd.asd-asd.pl","ASADDSA","----","WEQQWEasdasd","00-000","W+-==9tt"},

@@ -10,5 +10,6 @@ require (
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/sirupsen/logrus v1.8.1
 	go.mongodb.org/mongo-driver v1.5.2
+	golang.org/x/crypto v0.0.0-20210506145944-38f3c27a63bf // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 )

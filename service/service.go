@@ -6,52 +6,42 @@ import (
 	"regexp"
 	"unicode"
 	"github.com/wojbog/praktyki_backend/repository/user"
+	"github.com/wojbog/praktyki_backend/models"
 	"github.com/go-playground/validator"
+	"golang.org/x/crypto/bcrypt"
 	log "github.com/sirupsen/logrus"
 )
 
-//Person type of new user
-type Person struct { 
-	Name      string `json:"name" validate:"required,alpha"`
-	Surname   string `json:"surname" validate:"required,alpha"`
-	Email     string `json:"email" validate:"required,email"`
-	Street    string `json:"street" validate:"required,alpha"`
-	Number    string `json:"number" validate:"required,alphanum"`
-	City      string `json:"city" validate:"required,alpha"`
-	Post_code string `json:"post_code" validate:"required,postCode"`
-	Pass      string `json:"pass" validate:"required,password"`
-}
+
 //Service store collection
 type Service struct {
 	userCol *user.Collection
 }
 
 //AddNewUser
-func (s *Service) AddNewUser(ctx context.Context, p Person)([]string,error ) {
+//return status,userResponse,table of errors,error 
+func (s *Service) AddNewUser(ctx context.Context, user models.NewUser)(int,models.UserResponse,[]string,error ) {
 
 	//validation
-	if tab, errv := Validate(p); errv != nil {
+	if tab, errv := Validate(user); errv != nil {
 		log.Info(errv.Error())
-		return tab, errv
+		return 400,models.UserResponse{},tab, errv
 	}
 	
-	user:= user.PersonUser {
-		Name: p.Name,
-		Surname: p.Surname,
-		Email: p.Email,
-		Street: p.Street,
-		Number: p.Number,
-		City: p.City,
-		Post_code: p.Post_code,
-		Pass: p.Pass,
-	}
+	//hash
+	str,_:=bcrypt.GenerateFromPassword([]byte(user.Pass),14)
+	user.Pass=string(str)
 
 	//add to datebase
-	if str,err:=s.userCol.InsertUser(ctx,user);err!=nil {
+	if user,err:=s.userCol.InsertUser(ctx,user);err!=nil {
 		log.Info(err.Error())
-		return []string{str},err
+		if err.Error()=="user exists" {
+			return 400,models.UserResponse{},[]string{},err
+		} else {
+			return 500,models.UserResponse{},[]string{},errors.New("Internal Server Error")
+		}
 	}else {
-		return []string{str},nil
+		return 200,user,[]string{},nil
 	}
 	
 
@@ -102,7 +92,7 @@ func validatePassword(fl validator.FieldLevel) bool {
 }
 
 //Validation validate Person struct
-func Validate(p Person) ([]string, error) {
+func Validate(p models.NewUser) ([]string, error) {
 	validate := validator.New()
 	validate.RegisterValidation("postCode", validatePostCode)
 	validate.RegisterValidation("password", validatePassword)

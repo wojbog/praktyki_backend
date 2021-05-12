@@ -3,8 +3,8 @@ package user
 import (
 	"context"
 	"errors"
-
 	log "github.com/sirupsen/logrus"
+	"github.com/wojbog/praktyki_backend/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -15,34 +15,30 @@ type Collection struct {
 	col *mongo.Collection
 }
 
-//Person type of new user
-type PersonUser struct {
-	Name      string
-	Surname   string
-	Email     string
-	Street    string
-	Number    string
-	City      string
-	Post_code string
-	Pass      string
-}
-
 //InsertUser add new user to Datebase
 //return id of new user if correct added
-func (colUser *Collection) InsertUser(ctx context.Context, user PersonUser) (string, error) { //dodawanie użytkownika
+func (colUser *Collection) InsertUser(ctx context.Context, user models.NewUser) (models.UserResponse, error) { //dodawanie użytkownika
 
-	per := &PersonUser{}
-	if errv := colUser.col.FindOne(ctx, bson.M{"email": user.Email}).Decode(per); errv == nil {
-		return "", errors.New("user exists")
+	per := models.UserResponse{}
+	if errv := colUser.col.FindOne(ctx, bson.M{"email": user.Email}).Decode(&per); errv == nil {
+		
+		return models.UserResponse{}, errors.New("user exists")
 	} else {
 		result, err := colUser.col.InsertOne(ctx, user)
 		if err != nil {
 			log.Fatal(err)
-			return "", err
+			return models.UserResponse{}, err
 		}
-		id := result.InsertedID
 
-		return id.(primitive.ObjectID).Hex(), nil
+		log.Info("success add new user, id: " + result.InsertedID.(primitive.ObjectID).Hex())
+
+		if errv := colUser.col.FindOne(ctx, bson.M{"email": user.Email}).Decode(&per); errv != nil {
+			
+			return models.UserResponse{}, errors.New("Cannot find in Datebase")
+		} else {
+			return per, nil
+		}
+		
 	}
 }
 
