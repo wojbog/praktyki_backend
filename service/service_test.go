@@ -77,7 +77,7 @@ func TestValidateStructReturnErrorIfStructIsInvalid(t *testing.T) {
 	validate.RegisterValidation("postCode", validatePostCode)
 	validate.RegisterValidation("password", validatePassword)
 	for i:=0;i<len(per);i++ {
-		err:=validate.Struct(per[i])
+		err:=Validate(per[i])
 		if err!=nil {
 			t.Error(err)
 		}
@@ -95,11 +95,8 @@ func TestValidateStructReturnErrorIfStructIsValid(t *testing.T) {
 	{"ASDSSDl","asdasd","asd.pooijk-asda@asdasd.asdasd.asd-asd.pl","ASADDSA","12243","WEQQWEa1441sdasd","00-000","W+-==9tt"},
 	{"ASDSSDl","asdasd","asd.pooijk-asda@asdasd.asdasd.asd-asd.pl","ASADDSA","12243","WEQQWEasdasd","000000","W+-==9tt"},
 	{"ASDSSDl","asdasd","asd.pooijk-asda@asdasd.asdasd.asd-asd.pl","ASADDSA","12243","WEQQWEasdasd","00-000","W+-=="}}
-	validate:= validator.New()
-	validate.RegisterValidation("postCode", validatePostCode)
-	validate.RegisterValidation("password", validatePassword)
 	for i:=0;i<len(per);i++ {
-		err:=validate.Struct(per[i])
+		err:=Validate(per[i])
 		if err==nil {
 			t.Error(err)
 		}

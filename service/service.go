@@ -19,13 +19,13 @@ type Service struct {
 }
 
 //AddNewUser
-//return status,userResponse,table of errors,error 
-func (s *Service) AddNewUser(ctx context.Context, user models.NewUser)(int,models.UserResponse,[]string,error ) {
+//return userResponse,table of errors,error 
+func (s *Service) AddNewUser(ctx context.Context, user models.NewUser)(models.UserResponse,error) {
 
 	//validation
-	if tab, errv := Validate(user); errv != nil {
+	if  errv := Validate(user); errv != nil {
 		log.Info(errv.Error())
-		return 400,models.UserResponse{},tab, errv
+		return models.UserResponse{}, errv
 	}
 	
 	//hash
@@ -36,12 +36,12 @@ func (s *Service) AddNewUser(ctx context.Context, user models.NewUser)(int,model
 	if user,err:=s.userCol.InsertUser(ctx,user);err!=nil {
 		log.Info(err.Error())
 		if err.Error()=="user exists" {
-			return 400,models.UserResponse{},[]string{},err
+			return models.UserResponse{},err
 		} else {
-			return 500,models.UserResponse{},[]string{},errors.New("Internal Server Error")
+			return models.UserResponse{},errors.New("Internal Server Error")
 		}
 	}else {
-		return 200,user,[]string{},nil
+		return user,nil
 	}
 	
 
@@ -92,18 +92,17 @@ func validatePassword(fl validator.FieldLevel) bool {
 }
 
 //Validation validate Person struct
-func Validate(p models.NewUser) ([]string, error) {
+func Validate(p models.NewUser) error {
 	validate := validator.New()
 	validate.RegisterValidation("postCode", validatePostCode)
 	validate.RegisterValidation("password", validatePassword)
 	if err := validate.Struct(p); err != nil {
-		log.Info("validation error")
-		var TabErrors []string
+		var TabErrors string
 		for _, err := range err.(validator.ValidationErrors) {
-
-			TabErrors = append(TabErrors, err.Field())
+			TabErrors+=" "+err.Field()
+			
 		}
-		return TabErrors, errors.New("validation error")
+		return  errors.New("validation-error:"+TabErrors)
 	}
-	return make([]string, 0), nil
+	return  nil
 }

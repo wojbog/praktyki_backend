@@ -3,6 +3,7 @@ package handlers
 
 
 import (
+	"strings"
 	"github.com/gofiber/fiber/v2"
 	log "github.com/sirupsen/logrus"
 	"github.com/wojbog/praktyki_backend/service"
@@ -25,12 +26,17 @@ func CreateUser(s *service.Service) func (c *fiber.Ctx) error {
 			"error":   "Cannot read request"})
 	}
 	//add to datebase
-	if status,user,tab, err:=s.AddNewUser(c.Context(),p); err!=nil {
-		if status==400 {
+	if user, err:=s.AddNewUser(c.Context(),p); err!=nil {
+		if err.Error()=="user exists" {
 		return c.Status(400).JSON(&fiber.Map{
 			"success": false,
-			"error":   err.Error(),
-			"list":    tab})
+			"error":   err.Error()})
+		} else if tab:=strings.Split(err.Error()," "); tab[0]=="validation-error:" {
+			return c.Status(400).JSON(&fiber.Map{
+				"success": false,
+				"error":   tab[0],
+				"list":tab[1:]})
+
 		}else {
 			return c.Status(500).JSON(&fiber.Map{
 				"success": false,

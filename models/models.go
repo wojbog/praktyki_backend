@@ -1,8 +1,7 @@
 package models
 
-
 //NewUser type of new user
-type NewUser struct { 
+type NewUser struct {
 	Name      string `json:"name" validate:"required,alpha"`
 	Surname   string `json:"surname" validate:"required,alpha"`
 	Email     string `json:"email" validate:"required,email"`
@@ -13,7 +12,7 @@ type NewUser struct {
 	Pass      string `json:"pass" validate:"required,password"`
 }
 
-//UserResponse information to client about user
+//UserResponse inform client about user
 type UserResponse struct {
 	Name      string `json:"name" `
 	Surname   string `json:"surname" `
