@@ -18,13 +18,14 @@ func CreateUser(s *service.Service) func (c *fiber.Ctx) error {
 	//p instance of user
 	var p models.NewUser
 
-	//convert to service.Person type 
+	//convert to models.NewUser type 
 	if err := c.BodyParser(&p); err != nil {
 		log.Info(err.Error())
 		return c.Status(400).JSON(&fiber.Map{
 			"success": false,
 			"error":   "Cannot read request"})
 	}
+	
 	//add to datebase
 	if user, err:=s.AddNewUser(c.Context(),p); err!=nil {
 		if err.Error()=="user exists" {
@@ -48,3 +49,4 @@ func CreateUser(s *service.Service) func (c *fiber.Ctx) error {
 	}
 
 }}
+

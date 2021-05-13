@@ -1,5 +1,9 @@
 package models
 
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
+
 //NewUser type of new user
 type NewUser struct {
 	Name      string `json:"name" validate:"required,alpha"`
@@ -21,4 +25,10 @@ type UserResponse struct {
 	Number    string `json:"number" `
 	City      string `json:"city"`
 	Post_code string `json:"post_code" `
+}
+
+type UserLogin struct {
+	Id		  primitive.ObjectID  `bson:"_id" json:"id,omitempty"`
+	Email     string `json:"email"`
+	Pass      string `json:"pass"`
 }

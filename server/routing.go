@@ -15,5 +15,8 @@ func Routing(app *fiber.App, ser *service.Service){
 	//CreateUser endpoint add new user
 	app.Post("/createUser", handlers.CreateUser(ser))
 
+	//login endpoint login user
+	app.Post("/login",handlers.LoginUser(ser))
+
 
 }

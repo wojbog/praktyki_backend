@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	
 )
 
 //Collection type store collecion instance in Datebase
@@ -17,7 +18,7 @@ type Collection struct {
 
 //InsertUser add new user to Datebase
 //return id of new user if correct added
-func (colUser *Collection) InsertUser(ctx context.Context, user models.NewUser) (models.UserResponse, error) { //dodawanie użytkownika
+func (colUser *Collection) InsertUser(ctx context.Context, user models.NewUser) (models.UserResponse, error) { 
 
 	per := models.UserResponse{}
 	if errv := colUser.col.FindOne(ctx, bson.M{"email": user.Email}).Decode(&per); errv == nil {
@@ -39,6 +40,16 @@ func (colUser *Collection) InsertUser(ctx context.Context, user models.NewUser) 
 			return per, nil
 		}
 		
+	}
+}
+//GetUserLogin check in datebase
+func (colUser *Collection) GetUserLogin(ctx context.Context, user models.UserLogin) (models.UserLogin, error) { 
+
+	per := models.UserLogin{}
+	if errv := colUser.col.FindOne(ctx, bson.M{"email": user.Email}).Decode(&per); errv != nil {
+		return models.UserLogin{}, errors.New("incorrect data")
+	} else {
+		return per, nil
 	}
 }
 

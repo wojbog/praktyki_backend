@@ -10,6 +10,7 @@ import (
 	"github.com/go-playground/validator"
 	"golang.org/x/crypto/bcrypt"
 	log "github.com/sirupsen/logrus"
+	
 )
 
 
@@ -19,7 +20,7 @@ type Service struct {
 }
 
 //AddNewUser
-//return userResponse,table of errors,error 
+//return userResponse,error 
 func (s *Service) AddNewUser(ctx context.Context, user models.NewUser)(models.UserResponse,error) {
 
 	//validation
@@ -44,6 +45,27 @@ func (s *Service) AddNewUser(ctx context.Context, user models.NewUser)(models.Us
 		return user,nil
 	}
 	
+
+}
+//LoginUser
+//return models.UserLogin,error
+func (s *Service) LoginUser(ctx context.Context, user models.UserLogin)(models.UserLogin,error) {
+
+		//chek in datebase
+		if userDB,err:=s.userCol.GetUserLogin(ctx,user);err!=nil {
+			log.Info(err.Error())
+			return models.UserLogin{},err
+			
+		}else {
+			if errv := bcrypt.CompareHashAndPassword([]byte(userDB.Pass), []byte(user.Pass)); errv!=nil {
+				log.Info("incorrect password user: "+userDB.Id.Hex())
+				return models.UserLogin{},errors.New("incorrect password")
+			}else {
+				return user,nil
+			}
+			
+		}
+		
 
 }
 
