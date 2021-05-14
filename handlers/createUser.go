@@ -2,8 +2,6 @@
 package handlers
 
 import (
-	"strings"
-
 	"github.com/gofiber/fiber/v2"
 	log "github.com/sirupsen/logrus"
 	"github.com/wojbog/praktyki_backend/models"
@@ -31,17 +29,17 @@ func CreateUser(s *service.Service) func(c *fiber.Ctx) error {
 			if err.Error() == "user exists" {
 				return c.Status(400).JSON(&fiber.Map{
 					"success": false,
-					"error":   err.Error()})
-			} else if tab := strings.Split(err.Error(), " "); tab[0] == "validation-error:" {
+					"error":   err})
+			} else if err.Error() == "validation error" {
 				return c.Status(400).JSON(&fiber.Map{
 					"success": false,
-					"error":   tab[0],
-					"list":    tab[1:]})
+					"error":   err})
 
 			} else {
 				return c.Status(500).JSON(&fiber.Map{
 					"success": false,
-					"error":   err.Error()})
+					"error":   err})
+
 			}
 		} else {
 

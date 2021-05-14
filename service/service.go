@@ -18,6 +18,15 @@ type Service struct {
 	userCol *user.Collection
 }
 
+//ValidationError contains array of invalid fields
+type ValidationError struct {
+	InvalidFields []string
+}
+
+func (e *ValidationError) Error() string {
+	return "validation error"
+}
+
 //AddNewUser
 //return userResponse,error
 func (s *Service) AddNewUser(ctx context.Context, user models.NewUser) (models.UserResponse, error) {
@@ -38,7 +47,7 @@ func (s *Service) AddNewUser(ctx context.Context, user models.NewUser) (models.U
 		if err.Error() == "user exists" {
 			return models.UserResponse{}, err
 		} else {
-			return models.UserResponse{}, errors.New("Internal Server Error")
+			return models.UserResponse{}, errors.New("internal Server Error")
 		}
 	} else {
 		return user, nil
@@ -58,6 +67,7 @@ func (s *Service) LoginUser(ctx context.Context, user models.User) (models.User,
 	} else {
 		if errv := bcrypt.CompareHashAndPassword([]byte(userDB.Pass), []byte(user.Pass)); errv != nil {
 			log.Info("incorrect password user: " + userDB.Id.Hex())
+
 			return models.User{}, errors.New("incorrect password")
 		} else {
 			return user, nil
@@ -78,11 +88,8 @@ func validatePostCode(fl validator.FieldLevel) bool {
 	re := regexp.MustCompile(`^\d{2}-\d{3}$`)
 	matches := re.FindAllString(fl.Field().String(), -1)
 
-	if len(matches) != 1 {
-		return false
-	}
+	return len(matches) == 1
 
-	return true
 }
 
 //validatePassword validate Password, correct format: min 8 chars, min. 1 Capital letter,min. 1 number
@@ -117,12 +124,11 @@ func Validate(p models.NewUser) error {
 	validate.RegisterValidation("postCode", validatePostCode)
 	validate.RegisterValidation("password", validatePassword)
 	if err := validate.Struct(p); err != nil {
-		var TabErrors string
+		var TabErrors []string
 		for _, err := range err.(validator.ValidationErrors) {
-			TabErrors += " " + err.Field()
-
+			TabErrors = append(TabErrors, err.Field())
 		}
-		return errors.New("validation-error:" + TabErrors)
+		return &ValidationError{InvalidFields: TabErrors}
 	}
 	return nil
 }

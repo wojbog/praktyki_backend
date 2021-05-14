@@ -34,8 +34,7 @@ func (colUser *Collection) InsertUser(ctx context.Context, user models.NewUser) 
 		log.Info("success add new user, id: " + result.InsertedID.(primitive.ObjectID).Hex())
 
 		if errv := colUser.col.FindOne(ctx, bson.M{"email": user.Email}).Decode(&per); errv != nil {
-
-			return models.UserResponse{}, errors.New("Cannot find in Datebase")
+			return models.UserResponse{}, errors.New("cannot find in Datebase")
 		} else {
 			return per, nil
 		}

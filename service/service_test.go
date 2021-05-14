@@ -75,8 +75,8 @@ func TestValidatePostReturnErrorIfPostCodeIsInvalid(t *testing.T) {
 //get incorrect data
 //return error if func return true
 func TestValidateStructReturnErrorIfStructIsInvalid(t *testing.T) {
-	per := []models.NewUser{{"Andasd", "asdasdP", "asd.pooijk-asda@asdasd.pl", "asdasd", "12a", "ssdfsdfQWEWEQ", "45-456", "Wertyui9"},
-		{"ASDSSD", "asdasd", "asd.pooijk-asda@asdasd.asdasd.asd-asd.pl", "ASADDSA", "12243", "WEQQWEasdasd", "00-000", "W+-==9tt"}}
+	per := []models.NewUser{{Name: "Andasd", Surname: "asdasdP", Email: "asd.pooijk-asda@asdasd.pl", Street: "asdasd", Number: "12a", City: "ssdfsdfQWEWEQ", Post_code: "45-456", Pass: "Wertyui9"},
+		{Name: "ASDSSD", Surname: "asdasd", Email: "asd.pooijk-asda@asdasd.asdasd.asd-asd.pl", Street: "ASADDSA", Number: "12243", City: "WEQQWEasdasd", Post_code: "00-000", Pass: "W+-==9tt"}}
 	validate := validator.New()
 	validate.RegisterValidation("postCode", validatePostCode)
 	validate.RegisterValidation("password", validatePassword)
@@ -93,13 +93,13 @@ func TestValidateStructReturnErrorIfStructIsInvalid(t *testing.T) {
 //get correct data
 //return error if func return false
 func TestValidateStructReturnErrorIfStructIsValid(t *testing.T) {
-	per := []models.NewUser{{"Andasd", "asdasdP", "asd.pooijk-asda@asdasd.pl@", "asdasd", "12a", "ssdfsdfQWEWEQ", "45-456", "Wertyui9"},
-		{"ASDSSD3", "asdasd", "asd.pooijk-asda@asdasd.asdasd.asd-asd.pl", "ASADDSA", "12243", "WEQQWEasdasd", "00-000", "W+-==9tt"},
-		{"ASDSSDh", "asdas9d", "asd.pooijk-asda@asdasd.asdasd.asd-asd.pl", "ASADDSA", "12243", "WEQQWEasdasd", "00-000", "W+-==9tt"},
-		{"ASDSSDl", "asdasd", "asd.pooijk-asda@asdasd.asdasd.asd-asd.pl", "ASADDSA", "----", "WEQQWEasdasd", "00-000", "W+-==9tt"},
-		{"ASDSSDl", "asdasd", "asd.pooijk-asda@asdasd.asdasd.asd-asd.pl", "ASADDSA", "12243", "WEQQWEa1441sdasd", "00-000", "W+-==9tt"},
-		{"ASDSSDl", "asdasd", "asd.pooijk-asda@asdasd.asdasd.asd-asd.pl", "ASADDSA", "12243", "WEQQWEasdasd", "000000", "W+-==9tt"},
-		{"ASDSSDl", "asdasd", "asd.pooijk-asda@asdasd.asdasd.asd-asd.pl", "ASADDSA", "12243", "WEQQWEasdasd", "00-000", "W+-=="}}
+	per := []models.NewUser{{Name: "Andasd", Surname: "asdasdP", Email: "asd.pooijk-asda@asdasd.pl@", Street: "asdasd", Number: "12a", City: "ssdfsdfQWEWEQ", Post_code: "45-456", Pass: "Wertyui9"},
+		{Name: "ASDSSD3", Surname: "asdasd", Email: "asd.pooijk-asda@asdasd.asdasd.asd-asd.pl", Street: "ASADDSA", Number: "12243", City: "WEQQWEasdasd", Post_code: "00-000", Pass: "W+-==9tt"},
+		{Name: "ASDSSDh", Surname: "asdas9d", Email: "asd.pooijk-asda@asdasd.asdasd.asd-asd.pl", Street: "ASADDSA", Number: "12243", City: "WEQQWEasdasd", Post_code: "00-000", Pass: "W+-==9tt"},
+		{Name: "ASDSSDl", Surname: "asdasd", Email: "asd.pooijk-asda@asdasd.asdasd.asd-asd.pl", Street: "ASADDSA", Number: "----", City: "WEQQWEasdasd", Post_code: "00-000", Pass: "W+-==9tt"},
+		{Name: "ASDSSDl", Surname: "asdasd", Email: "asd.pooijk-asda@asdasd.asdasd.asd-asd.pl", Street: "ASADDSA", Number: "12243", City: "WEQQWEa1441sdasd", Post_code: "00-000", Pass: "W+-==9tt"},
+		{Name: "ASDSSDl", Surname: "asdasd", Email: "asd.pooijk-asda@asdasd.asdasd.asd-asd.pl", Street: "ASADDSA", Number: "12243", City: "WEQQWEasdasd", Post_code: "000000", Pass: "W+-==9tt"},
+		{Name: "ASDSSDl", Surname: "asdasd", Email: "asd.pooijk-asda@asdasd.asdasd.asd-asd.pl", Street: "ASADDSA", Number: "12243", City: "WEQQWEasdasd", Post_code: "00-000", Pass: "W+-=="}}
 	for i := 0; i < len(per); i++ {
 		err := Validate(per[i])
 		if err == nil {
