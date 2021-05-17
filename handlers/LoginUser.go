@@ -9,6 +9,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	log "github.com/sirupsen/logrus"
 	"github.com/wojbog/praktyki_backend/models"
+	"github.com/wojbog/praktyki_backend/repository/user"
 	"github.com/wojbog/praktyki_backend/service"
 )
 
@@ -24,24 +25,24 @@ func LoginUser(s *service.Service) func(c *fiber.Ctx) error {
 			log.Info(err.Error())
 			return c.Status(400).JSON(&fiber.Map{
 				"success": false,
-				"error":   "Cannot read request"})
+				"error":   "cannot read request"})
 		}
 		//check in datebase and create token
-		if user, err := s.LoginUser(c.Context(), p); err != nil {
-			if err == errors.New("incorrect password") || err == errors.New("incorrect data") {
-				return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{
+		if us, err := s.LoginUser(c.Context(), p); err != nil {
+			if err == service.IncorrectPasswordError || err == user.UserNotFoundError {
+				return c.Status(400).JSON(&fiber.Map{
 					"success": false,
 					"error":   "incorrect password or email"})
 			} else {
 				return c.Status(500).JSON(&fiber.Map{
 					"success": false,
-					"error":   "Internal Server Error"})
+					"error":   "internal Server Error"})
 			}
 		} else {
-			if token, err := CreateToken(user.Id.Hex()); err != nil {
+			if token, err := CreateToken(us.Id.Hex()); err != nil {
 				return c.Status(500).JSON(&fiber.Map{
 					"success": false,
-					"error":   "Internal Server Error"})
+					"error":   "internal Server Error"})
 			} else {
 				return c.Status(200).JSON(&fiber.Map{
 					"success": true,

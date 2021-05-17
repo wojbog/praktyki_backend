@@ -1,10 +1,19 @@
 package service
 
 import (
+	"context"
+	"os"
 	"testing"
+	"time"
 
 	"github.com/go-playground/validator"
+	log "github.com/sirupsen/logrus"
 	"github.com/wojbog/praktyki_backend/models"
+	"github.com/wojbog/praktyki_backend/repository/user"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"golang.org/x/crypto/bcrypt"
 )
 
 //TestValidatePasswordReturnErrorIfPasswordIsValid
@@ -106,5 +115,90 @@ func TestValidateStructReturnErrorIfStructIsValid(t *testing.T) {
 			t.Error(err)
 		}
 	}
+
+}
+
+//TestAddNewUser test AddNewUser
+func TestAddNewUser(t *testing.T) {
+	p := []models.NewUser{{Name: "adsasd", Surname: "dasdasd", City: "asdasd", Number: "23432e", Street: "asdasd", Post_code: "00-000", Pass: "Wojtek6q", Email: "sss4tefan@elo.pl"},
+		{Name: "adsasd", Surname: "dasdasd", City: "asdasd", Number: "23432e", Street: "asdasd", Post_code: "00-000", Pass: "Wojtek6q", Email: "sss4tefan@elo.pl"},
+		{Name: "adsasd", Surname: "dasdasd", City: "asdasd", Number: "23432e", Street: "asdasd", Post_code: "0009000", Pass: "Wojtek6q", Email: "@sss4tefan@elo.pl"}}
+	s, c := config()
+	_, err := s.AddNewUser(context.Background(), p[0])
+	if err != nil {
+		t.Error()
+	}
+	_, err = s.AddNewUser(context.Background(), p[1])
+	if err.Error() != "user exists" {
+		t.Error()
+	}
+	_, err = s.AddNewUser(context.Background(), p[2])
+	if err.Error() != "validation error" {
+		t.Error()
+	}
+	c.DeleteOne(context.Background(), bson.M{"email": "sss4tefan@elo.pl"})
+}
+
+//TestLoginUser test LoginUser
+func TestLoginUser(t *testing.T) {
+	p := []models.User{{Name: "adsasd", Surname: "dasdasd", City: "asdasd", Number: "23432e", Street: "asdasd", Post_code: "00-000", Pass: "Wojtek6q", Email: "sss4tefan@elo.pl"},
+		{Name: "adsasd", Surname: "dasdasd", City: "asdasd", Number: "23432e", Street: "asdasd", Post_code: "00-000", Pass: "Wojtek6qq", Email: "sss4tefan@elo.pl"},
+		{Name: "adsasd", Surname: "dasdasd", City: "asdasd", Number: "23432e", Street: "asdasd", Post_code: "00-000", Pass: "Wojtek6q", Email: "ssssss4tefan@elo.pl"}}
+	us := p[0]
+	s, c := config()
+	str, _ := bcrypt.GenerateFromPassword([]byte(us.Pass), 14)
+	us.Pass = string(str)
+	c.InsertOne(context.Background(), us)
+
+	_, err := s.LoginUser(context.Background(), p[0])
+	if err != nil {
+		t.Error()
+	}
+	_, err = s.LoginUser(context.Background(), p[1])
+	if err.Error() != "incorrect password" {
+		t.Error()
+	}
+	_, err = s.LoginUser(context.Background(), p[2])
+	if err.Error() != "incorrect data" {
+		t.Error()
+	}
+	c.DeleteOne(context.Background(), us)
+
+}
+
+func config() (*Service, *mongo.Collection) {
+	str1 := os.Getenv("MONGO_URL")
+	if str1 == "" {
+		log.Fatal("NO MONGO URL")
+	}
+	str2 := os.Getenv("MONGO_DB")
+	if str2 == "" {
+		log.Fatal("NO MONGO DB")
+	}
+	mongo_URL := str1
+	datebasename := str2
+
+	client, err := mongo.NewClient(options.Client().ApplyURI(mongo_URL))
+	if err != nil {
+		log.Fatal(err)
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	err = client.Connect(ctx)
+	if err != nil {
+		log.Fatal(err)
+	} else {
+		log.Info("connect to DB")
+	}
+	DatabseName := datebasename
+	db := client.Database(DatabseName)
+
+	col := *db.Collection("users")
+
+	userCol := user.NewCollection(&col)
+
+	s := NewService(userCol)
+
+	return s, &col
 
 }

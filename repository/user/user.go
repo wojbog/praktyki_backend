@@ -16,6 +16,11 @@ type Collection struct {
 	col *mongo.Collection
 }
 
+var (
+	UserNotFoundError = errors.New("incorrect data")
+	UserExistError    = errors.New("user exists")
+)
+
 //InsertUser add new user to Datebase
 //return id of new user if correct added
 func (colUser *Collection) InsertUser(ctx context.Context, user models.NewUser) (models.UserResponse, error) {
@@ -23,7 +28,7 @@ func (colUser *Collection) InsertUser(ctx context.Context, user models.NewUser) 
 	per := models.UserResponse{}
 	if errv := colUser.col.FindOne(ctx, bson.M{"email": user.Email}).Decode(&per); errv == nil {
 
-		return models.UserResponse{}, errors.New("user exists")
+		return models.UserResponse{}, UserExistError
 	} else {
 		result, err := colUser.col.InsertOne(ctx, user)
 		if err != nil {
@@ -47,7 +52,7 @@ func (colUser *Collection) GetUserByEmail(ctx context.Context, user models.User)
 
 	per := models.User{}
 	if errv := colUser.col.FindOne(ctx, bson.M{"email": user.Email}).Decode(&per); errv != nil {
-		return models.User{}, errors.New("incorrect data")
+		return models.User{}, UserNotFoundError
 	} else {
 		return per, nil
 	}

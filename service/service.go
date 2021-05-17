@@ -27,30 +27,32 @@ func (e *ValidationError) Error() string {
 	return "validation error"
 }
 
+var IncorrectPasswordError = errors.New("incorrect password")
+
 //AddNewUser
 //return userResponse,error
-func (s *Service) AddNewUser(ctx context.Context, user models.NewUser) (models.UserResponse, error) {
+func (s *Service) AddNewUser(ctx context.Context, userNew models.NewUser) (models.UserResponse, error) {
 
 	//validation
-	if errv := Validate(user); errv != nil {
+	if errv := Validate(userNew); errv != nil {
 		log.Info(errv.Error())
 		return models.UserResponse{}, errv
 	}
 
 	//hash
-	str, _ := bcrypt.GenerateFromPassword([]byte(user.Pass), 14)
-	user.Pass = string(str)
+	str, _ := bcrypt.GenerateFromPassword([]byte(userNew.Pass), 14)
+	userNew.Pass = string(str)
 
 	//add to datebase
-	if user, err := s.userCol.InsertUser(ctx, user); err != nil {
+	if us, err := s.userCol.InsertUser(ctx, userNew); err != nil {
 		log.Info(err.Error())
-		if err.Error() == "user exists" {
+		if err == user.UserExistError {
 			return models.UserResponse{}, err
 		} else {
 			return models.UserResponse{}, errors.New("internal Server Error")
 		}
 	} else {
-		return user, nil
+		return us, nil
 	}
 
 }
@@ -68,7 +70,7 @@ func (s *Service) LoginUser(ctx context.Context, user models.User) (models.User,
 		if errv := bcrypt.CompareHashAndPassword([]byte(userDB.Pass), []byte(user.Pass)); errv != nil {
 			log.Info("incorrect password user: " + userDB.Id.Hex())
 
-			return models.User{}, errors.New("incorrect password")
+			return models.User{}, IncorrectPasswordError
 		} else {
 			return user, nil
 		}

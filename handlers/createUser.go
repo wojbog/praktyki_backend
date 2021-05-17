@@ -5,6 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	log "github.com/sirupsen/logrus"
 	"github.com/wojbog/praktyki_backend/models"
+	"github.com/wojbog/praktyki_backend/repository/user"
 	"github.com/wojbog/praktyki_backend/service"
 )
 
@@ -25,11 +26,11 @@ func CreateUser(s *service.Service) func(c *fiber.Ctx) error {
 		}
 
 		//add to datebase
-		if user, err := s.AddNewUser(c.Context(), p); err != nil {
-			if err.Error() == "user exists" {
+		if us, err := s.AddNewUser(c.Context(), p); err != nil {
+			if err == user.UserExistError {
 				return c.Status(400).JSON(&fiber.Map{
 					"success": false,
-					"error":   err})
+					"error":   err.Error()})
 			} else if err.Error() == "validation error" {
 				return c.Status(400).JSON(&fiber.Map{
 					"success": false,
@@ -38,12 +39,12 @@ func CreateUser(s *service.Service) func(c *fiber.Ctx) error {
 			} else {
 				return c.Status(500).JSON(&fiber.Map{
 					"success": false,
-					"error":   err})
+					"error":   err.Error()})
 
 			}
 		} else {
 
-			return c.Status(200).JSON(&fiber.Map{"success": true, "user": user})
+			return c.Status(200).JSON(&fiber.Map{"success": true, "user": us})
 		}
 
 	}
