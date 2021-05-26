@@ -131,7 +131,7 @@ func Config() (*service.Service, *mongo.Collection) {
 
 	userCol := user.NewCollection(&col)
 
-	s := service.NewService(userCol)
+	s := service.NewService(userCol, nil)
 	return s, &col
 
 }
