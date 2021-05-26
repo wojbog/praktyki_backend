@@ -6,11 +6,11 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/wojbog/praktyki_backend/models"
 	"github.com/wojbog/praktyki_backend/repository/user"
-	"github.com/wojbog/praktyki_backend/service"
+	userService "github.com/wojbog/praktyki_backend/service/user"
 )
 
 //CreateUser add new user to datebase
-func CreateUser(s *service.Service) func(c *fiber.Ctx) error {
+func CreateUser(s *userService.Service) func(c *fiber.Ctx) error {
 
 	return func(c *fiber.Ctx) error {
 

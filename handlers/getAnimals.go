@@ -5,13 +5,13 @@ import (
 	"github.com/gofiber/fiber/v2"
 	log "github.com/sirupsen/logrus"
 	"github.com/wojbog/praktyki_backend/models"
-	"github.com/wojbog/praktyki_backend/service"
+	animalsService "github.com/wojbog/praktyki_backend/service/animals"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 //GetAnimals handle getAnimal request
 //It parses user query to models.AnimalFilters and passes that to service
-func GetAnimals(s *service.Service) func(c *fiber.Ctx) error {
+func GetAnimals(s *animalsService.Service) func(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
 
 		//extracting user id

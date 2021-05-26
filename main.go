@@ -10,7 +10,8 @@ import (
 	"github.com/wojbog/praktyki_backend/repository/animals"
 	"github.com/wojbog/praktyki_backend/repository/user"
 	"github.com/wojbog/praktyki_backend/server"
-	"github.com/wojbog/praktyki_backend/service"
+	animalsService "github.com/wojbog/praktyki_backend/service/animals"
+	userService "github.com/wojbog/praktyki_backend/service/user"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -49,9 +50,10 @@ func main() {
 
 	animalsCol := animals.NewCollection(db.Collection("animals"))
 
-	s := service.NewService(userCol, animalsCol)
+	uService := userService.NewService(userCol)
+	aService := animalsService.NewService(animalsCol)
 
-	server.Routing(app, s)
+	server.Routing(app, uService, aService)
 
 	PORT := os.Getenv("PORT")
 	if PORT != "" {

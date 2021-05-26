@@ -15,7 +15,7 @@ import (
 	jwtware "github.com/gofiber/jwt/v2"
 	"github.com/wojbog/praktyki_backend/models"
 	"github.com/wojbog/praktyki_backend/repository/animals"
-	"github.com/wojbog/praktyki_backend/service"
+	animalsService "github.com/wojbog/praktyki_backend/service/animals"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -176,7 +176,7 @@ func TestGetAnimals(t *testing.T) {
 	}
 }
 
-func ConfigAnimals() (*service.Service, *mongo.Collection) {
+func ConfigAnimals() (*animalsService.Service, *mongo.Collection) {
 	str1 := os.Getenv("MONGO_URL")
 	if str1 == "" {
 		log.Fatal("NO MONGO URL")
@@ -206,7 +206,7 @@ func ConfigAnimals() (*service.Service, *mongo.Collection) {
 
 	animalCol := animals.NewCollection(&col)
 
-	s := service.NewService(nil, animalCol)
+	s := animalsService.NewService(animalCol)
 	return s, &col
 
 }

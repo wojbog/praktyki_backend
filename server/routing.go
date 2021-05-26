@@ -9,31 +9,20 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	jwtware "github.com/gofiber/jwt/v2"
 	"github.com/wojbog/praktyki_backend/handlers"
-	"github.com/wojbog/praktyki_backend/service"
+	animalsService "github.com/wojbog/praktyki_backend/service/animals"
+	userService "github.com/wojbog/praktyki_backend/service/user"
 )
 
-// func authRequired() func(ctx *fiber.Ctx) error {
-
-// 	secret := os.Getenv("ACCESS_SECRET")
-// 	if secret == "" {
-// 		log.Fatal("No ACCESS_SECRET")
-// 	}
-
-// 	return jwtware.New(jwtware.Config{
-// 		SigningKey: []byte(secret),
-// 	})
-// }
-
 //Routing routes in app
-func Routing(app *fiber.App, ser *service.Service) {
+func Routing(app *fiber.App, uSer *userService.Service, aSer *animalsService.Service) {
 
 	app.Use(cors.New())
 
 	//CreateUser endpoint add new user
-	app.Post("/createUser", handlers.CreateUser(ser))
+	app.Post("/createUser", handlers.CreateUser(uSer))
 
 	//login endpoint login user
-	app.Post("/login", handlers.LoginUser(ser))
+	app.Post("/login", handlers.LoginUser(uSer))
 
 	//Protected routes
 	secret := os.Getenv("ACCESS_SECRET")
@@ -51,6 +40,6 @@ func Routing(app *fiber.App, ser *service.Service) {
 	}))
 
 	//getAnimals endpoint return users animal
-	app.Get("/getAnimals", handlers.GetAnimals(ser))
+	app.Get("/getAnimals", handlers.GetAnimals(aSer))
 
 }

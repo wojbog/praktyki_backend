@@ -13,7 +13,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/wojbog/praktyki_backend/models"
 	"github.com/wojbog/praktyki_backend/repository/user"
-	"github.com/wojbog/praktyki_backend/service"
+	userService "github.com/wojbog/praktyki_backend/service/user"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -100,7 +100,7 @@ func TestCreateUser(t *testing.T) {
 }
 
 //Config configuration function
-func Config() (*service.Service, *mongo.Collection) {
+func Config() (*userService.Service, *mongo.Collection) {
 	str1 := os.Getenv("MONGO_URL")
 	if str1 == "" {
 		log.Fatal("NO MONGO URL")
@@ -131,7 +131,7 @@ func Config() (*service.Service, *mongo.Collection) {
 
 	userCol := user.NewCollection(&col)
 
-	s := service.NewService(userCol, nil)
+	s := userService.NewService(userCol)
 	return s, &col
 
 }

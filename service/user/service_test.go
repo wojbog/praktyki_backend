@@ -3,17 +3,14 @@ package service
 import (
 	"context"
 	"os"
-	"reflect"
 	"testing"
 	"time"
 
 	"github.com/go-playground/validator"
 	log "github.com/sirupsen/logrus"
 	"github.com/wojbog/praktyki_backend/models"
-	"github.com/wojbog/praktyki_backend/repository/animals"
 	"github.com/wojbog/praktyki_backend/repository/user"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
@@ -126,7 +123,7 @@ func TestAddNewUser(t *testing.T) {
 	p := []models.NewUser{{Name: "adsasd", Surname: "dasdasd", City: "asdasd", Number: "23432e", Street: "asdasd", Post_code: "00-000", Pass: "Wojtek6q", Email: "sss4tefan@elo.pl"},
 		{Name: "adsasd", Surname: "dasdasd", City: "asdasd", Number: "23432e", Street: "asdasd", Post_code: "00-000", Pass: "Wojtek6q", Email: "sss4tefan@elo.pl"},
 		{Name: "adsasd", Surname: "dasdasd", City: "asdasd", Number: "23432e", Street: "asdasd", Post_code: "0009000", Pass: "Wojtek6q", Email: "@sss4tefan@elo.pl"}}
-	s, c, _ := config()
+	s, c := config()
 	_, err := s.AddNewUser(context.Background(), p[0])
 	if err != nil {
 		t.Error()
@@ -148,7 +145,7 @@ func TestLoginUser(t *testing.T) {
 		{Name: "adsasd", Surname: "dasdasd", City: "asdasd", Number: "23432e", Street: "asdasd", Post_code: "00-000", Pass: "Wojtek6qq", Email: "sss4tefan@elo.pl"},
 		{Name: "adsasd", Surname: "dasdasd", City: "asdasd", Number: "23432e", Street: "asdasd", Post_code: "00-000", Pass: "Wojtek6q", Email: "ssssss4tefan@elo.pl"}}
 	us := p[0]
-	s, c, _ := config()
+	s, c := config()
 	str, _ := bcrypt.GenerateFromPassword([]byte(us.Pass), 14)
 	us.Pass = string(str)
 	c.InsertOne(context.Background(), us)
@@ -169,112 +166,7 @@ func TestLoginUser(t *testing.T) {
 
 }
 
-func TestGetAnimals(t *testing.T) {
-	s, _, c := config()
-
-	testUserId, _ := primitive.ObjectIDFromHex("0")
-
-	exampleAnimal := models.Animal{
-		OwnerId:      testUserId,
-		Series:       "abcdef",
-		BirthDate:    time.Date(2020, 10, 3, 0, 0, 0, 0, time.UTC),
-		Species:      "1",
-		UtilityType:  "1",
-		Sex:          "1",
-		Status:       "1",
-		MotherSeries: "1",
-		Breed:        "1",
-	}
-
-	exampleAnimal2 := models.Animal{
-		OwnerId:      testUserId,
-		Series:       "123456",
-		BirthDate:    time.Date(2010, 12, 3, 0, 0, 0, 0, time.UTC),
-		Species:      "2",
-		UtilityType:  "2",
-		Sex:          "2",
-		Status:       "2",
-		MotherSeries: "2",
-		Breed:        "2",
-	}
-
-	exampleAnimal3 := models.Animal{
-		OwnerId:      testUserId,
-		Series:       "zyxwut",
-		BirthDate:    time.Date(2000, 12, 3, 0, 0, 0, 0, time.UTC),
-		Species:      "3",
-		UtilityType:  "3",
-		Sex:          "3",
-		Status:       "3",
-		MotherSeries: "3",
-		Breed:        "3",
-	}
-
-	c.InsertMany(context.Background(), []interface{}{exampleAnimal, exampleAnimal2, exampleAnimal3})
-	defer c.DeleteMany(context.Background(), bson.M{"ownerId": testUserId})
-
-	testCases := []models.AnimalFilters{
-		{Series: "123456"},
-		{
-			OwnerId:      testUserId,
-			MinBirthDate: "2006-10-10",
-			MaxBirthDate: "2030-10-10",
-		},
-		{
-			OwnerId:      testUserId,
-			MinBirthDate: "sie",
-			MaxBirthDate: "ma co tam",
-		},
-		{
-			OwnerId:      testUserId,
-			MinBirthDate: "ugh hackers everywhere",
-			MaxBirthDate: "2005-12-19",
-		},
-		{
-			OwnerId:      testUserId,
-			MinBirthDate: "2007-01-01",
-			MaxBirthDate: "im like an analphabetic",
-		},
-		{OwnerId: testUserId, MotherSeries: "3"},
-		{OwnerId: testUserId, Sex: "2"},
-		{OwnerId: testUserId, Breed: "chleb"},
-		{OwnerId: testUserId, UtilityType: "coco jambo"},
-	}
-
-	exp := []struct {
-		animals []models.Animal
-		err     error
-	}{
-		{[]models.Animal{exampleAnimal2}, nil},
-		{[]models.Animal{exampleAnimal, exampleAnimal2}, nil},
-		{[]models.Animal{exampleAnimal, exampleAnimal2, exampleAnimal3}, nil},
-		{[]models.Animal{exampleAnimal3}, nil},
-		{[]models.Animal{exampleAnimal, exampleAnimal2}, nil},
-		{[]models.Animal{exampleAnimal3}, nil},
-		{[]models.Animal{exampleAnimal2}, nil},
-		{nil, nil},
-		{nil, nil},
-	}
-
-	if len(testCases) != len(exp) {
-		t.Fatal("Numbers of test cases and expectations are not equal!")
-	}
-
-	for i := 0; i < len(testCases); i++ {
-		if res, err := s.GetAnimals(context.Background(), testCases[i]); err != nil {
-			t.Errorf("Unespected error occured: %s", err)
-		} else {
-			if !reflect.DeepEqual(res, exp[i].animals) {
-				t.Errorf("Wrong query result!\nFilter: %+v\nExpected: %v\nReceived: %v", testCases[i], exp[i].animals, res)
-			}
-			if err != exp[i].err {
-				t.Errorf("Wrong error response!\nFilter: %+v\nExpected: %v\nReceived: %v", testCases[i], exp[i].err, err)
-			}
-		}
-	}
-}
-
-func config() (*Service, *mongo.Collection, *mongo.Collection) {
+func config() (*Service, *mongo.Collection) {
 	str1 := os.Getenv("MONGO_URL")
 	if str1 == "" {
 		log.Fatal("NO MONGO URL")
@@ -304,10 +196,7 @@ func config() (*Service, *mongo.Collection, *mongo.Collection) {
 	ucol := *db.Collection("users")
 	userCol := user.NewCollection(&ucol)
 
-	acol := *db.Collection("animals")
-	animalCol := animals.NewCollection(&acol)
+	s := NewService(userCol)
 
-	s := NewService(userCol, animalCol)
-
-	return s, &ucol, &acol
+	return s, &ucol
 }
