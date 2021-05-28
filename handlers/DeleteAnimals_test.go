@@ -47,7 +47,7 @@ func TestDeleteAnimalWithInvalidJwtReturnsUnathorized(t *testing.T) {
 }
 
 func TestDeleteAnimal(t *testing.T) {
-	s, c := ConfigAnimals()
+	s, c := configAnimals()
 	id, _ := primitive.ObjectIDFromHex("1234")
 	p := []models.AnimalRequest{{Status: "asdasd"}, {Series: "qwertyuiop"}, {Series: "123456789"}}
 

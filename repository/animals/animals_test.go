@@ -128,6 +128,131 @@ func TestDeleteAnimal(t *testing.T) {
 		t.Error("can not delete")
 	}
 }
+func TestInsertAnimalWithRedundantAnimalReturnAnimalExistsError(t *testing.T) {
+	c := config(t)
+	ctx := context.Background()
+
+	testUserId, _ := primitive.ObjectIDFromHex("0")
+	example := models.Animal{OwnerId: testUserId,
+		Series:       "abcdef",
+		BirthDate:    time.Date(2019, 10, 3, 0, 0, 0, 0, time.UTC),
+		Species:      "1",
+		UtilityType:  "1",
+		Sex:          "1",
+		Status:       "1",
+		MotherSeries: "1",
+		Breed:        "1"}
+
+	c.col.InsertOne(ctx, example)
+	defer c.col.DeleteMany(ctx, bson.M{"ownerId": testUserId})
+
+	_, err := c.InsertAnimal(ctx, example)
+	if err != AnimalExistsError {
+		t.Errorf("Wrong error!\nExpected: %v\nReceived: %v", AnimalExistsError, err)
+	}
+
+	test := models.Animal{OwnerId: testUserId,
+		Series:       "abcdef",
+		BirthDate:    time.Date(2039, 10, 3, 0, 0, 0, 0, time.UTC),
+		Species:      "2",
+		UtilityType:  "qwer",
+		Sex:          "qwer",
+		Status:       "qwe",
+		MotherSeries: "qwer",
+		Breed:        "qwer"}
+
+	_, err = c.InsertAnimal(ctx, test)
+	if err != AnimalExistsError {
+		t.Errorf("Wrong error!\nExpected: %v\nReceived: %v", AnimalExistsError, err)
+	}
+
+}
+func TestInsertAnimalsWithUniqueAnimalInserAnimal(t *testing.T) {
+	c := config(t)
+	ctx := context.Background()
+
+	testUserId, _ := primitive.ObjectIDFromHex("0")
+	testCases := []models.Animal{
+		{
+			OwnerId:      testUserId,
+			Series:       "abcdef",
+			BirthDate:    time.Date(2019, 10, 3, 0, 0, 0, 0, time.UTC),
+			Species:      "1",
+			UtilityType:  "1",
+			Sex:          "1",
+			Status:       "1",
+			MotherSeries: "1",
+			Breed:        "1",
+		}, {
+			OwnerId:      testUserId,
+			Series:       "123456",
+			BirthDate:    time.Date(2010, 12, 3, 0, 0, 0, 0, time.UTC),
+			Species:      "2",
+			UtilityType:  "2",
+			Sex:          "2",
+			Status:       "2",
+			MotherSeries: "2",
+			Breed:        "2",
+		}, {
+			OwnerId:      testUserId,
+			Series:       "zyxwut",
+			BirthDate:    time.Date(2000, 12, 3, 0, 0, 0, 0, time.UTC),
+			Species:      "3",
+			UtilityType:  "3",
+			Sex:          "3",
+			Status:       "3",
+			MotherSeries: "3",
+			Breed:        "3",
+		},
+	}
+
+	exp := []models.AnimalRequest{
+		{
+			Series:       "abcdef",
+			BirthDate:    "2019-10-03",
+			Species:      "1",
+			UtilityType:  "1",
+			Sex:          "1",
+			Status:       "1",
+			MotherSeries: "1",
+			Breed:        "1",
+		}, {
+			Series:       "123456",
+			BirthDate:    "2010-12-03",
+			Species:      "2",
+			UtilityType:  "2",
+			Sex:          "2",
+			Status:       "2",
+			MotherSeries: "2",
+			Breed:        "2",
+		}, {
+			Series:       "zyxwut",
+			BirthDate:    "2000-12-03",
+			Species:      "3",
+			UtilityType:  "3",
+			Sex:          "3",
+			Status:       "3",
+			MotherSeries: "3",
+			Breed:        "3",
+		},
+	}
+	if len(testCases) != len(exp) {
+		t.Fatal("Numbers of test cases and expectations are not equal!")
+	}
+
+	for i := 0; i < len(testCases); i++ {
+		res, err := c.InsertAnimal(ctx, testCases[i])
+		defer c.col.DeleteOne(ctx, bson.M{"ownerId": testUserId})
+		if err != nil {
+			t.Errorf("Wrong error!\nAnimal:%v\nExpected: nil\nReceived: %v\n\n", testCases[i], err)
+		}
+
+		if res != exp[i] {
+			t.Errorf("Wrong animal result!\nExpected: %+v\nReceived: %+v\n\n", exp[i], res)
+		}
+	}
+
+}
 
 func config(t *testing.T) *Collection {
 	str1 := os.Getenv("MONGO_URL")

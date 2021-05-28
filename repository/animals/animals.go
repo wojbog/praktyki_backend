@@ -10,14 +10,23 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+var (
+	AnimalExistsError   = errors.New("animal exists")
+	InternalServerError = errors.New("internal server error")
+)
+
 type Collection struct {
 	col *mongo.Collection
 }
 
 var (
 	CanNotDeleteError = errors.New("can not delete")
-	AnimalNotexist=errors.New("animal not exists")
+	AnimalNotexist    = errors.New("animal not exists")
 )
+
+func NewCollection(col *mongo.Collection) *Collection {
+	return &Collection{col}
+}
 
 //GetAnimals returns array of model.Animal
 //Use filter to filter objects
@@ -49,6 +58,31 @@ func (colAnim *Collection) DeleteAnimal(ctx context.Context, filter models.Anima
 	}
 }
 
-func NewCollection(col *mongo.Collection) *Collection {
-	return &Collection{col}
+//InsertAnimal
+//return inserted Animal
+//if Animalexists return AnimalExistsError
+func (colAnim *Collection) InsertAnimal(ctx context.Context, animal models.Animal) (models.AnimalRequest, error) {
+
+	if err := colAnim.col.FindOne(ctx, bson.M{"series": animal.Series}); err != nil {
+		//if err isnt no document error
+		if err.Err() != mongo.ErrNoDocuments {
+			return models.AnimalRequest{}, AnimalExistsError
+		}
+	}
+
+	res, err := colAnim.col.InsertOne(ctx, animal)
+	if err != nil {
+		log.Info("err insss")
+		return models.AnimalRequest{}, InternalServerError
+	}
+
+	a := new(models.Animal)
+	if err := colAnim.col.FindOne(ctx, bson.M{"_id": res.InsertedID}).Decode(a); err != nil {
+		log.Info("err fioooafter")
+		log.Info(err)
+		return models.AnimalRequest{}, InternalServerError
+	}
+
+	return models.Animal2Request(*a), nil
+
 }
