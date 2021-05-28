@@ -41,5 +41,6 @@ func Routing(app *fiber.App, uSer *userService.Service, aSer *animalsService.Ser
 
 	//getAnimals endpoint return users animal
 	app.Get("/getAnimals", handlers.GetAnimals(aSer))
+	app.Post("/createAnimal", handlers.CreateAnimal(aSer))
 
 }

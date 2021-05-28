@@ -121,6 +121,256 @@ func TestGetAnimals(t *testing.T) {
 	}
 }
 
+func TestAddNewAnimalWithInvalidInputReturnValidationError(t *testing.T) {
+	s, c := config()
+	ctx := context.Background()
+
+	testUserId, _ := primitive.ObjectIDFromHex("0")
+	testCases := []models.Animal{
+		{
+			OwnerId:      testUserId,
+			Series:       "1",
+			BirthDate:    time.Date(2019, 10, 3, 0, 0, 0, 0, time.UTC),
+			Species:      "pig",
+			UtilityType:  "",
+			Sex:          "female",
+			Status:       "sold",
+			MotherSeries: "1",
+			Breed:        "MM",
+		}, {
+			OwnerId:      testUserId,
+			Series:       "2",
+			BirthDate:    time.Date(2010, 12, 3, 0, 0, 0, 0, time.UTC),
+			Species:      "",
+			UtilityType:  "meat",
+			Sex:          "male",
+			Status:       "ezzz",
+			MotherSeries: "2",
+			Breed:        "SM",
+		}, {
+			OwnerId:      testUserId,
+			Series:       "3",
+			BirthDate:    time.Date(2000, 12, 3, 0, 0, 0, 0, time.UTC),
+			Species:      "cattle",
+			UtilityType:  "commbbbined",
+			Sex:          "female",
+			Status:       "carrion",
+			MotherSeries: "3",
+			Breed:        "RaaaaaaaW",
+		},
+		{
+			OwnerId:      testUserId,
+			Series:       "3",
+			BirthDate:    time.Date(2000, 12, 3, 0, 0, 0, 0, time.UTC),
+			Species:      "cattle",
+			UtilityType:  "commdddbbbined",
+			Sex:          "female",
+			Status:       "carrion",
+			MotherSeries: "3",
+			Breed:        "RW",
+		}, {
+			OwnerId:      testUserId,
+			Series:       "",
+			BirthDate:    time.Date(2000, 12, 3, 0, 0, 0, 0, time.UTC),
+			Species:      "cattle",
+			UtilityType:  "commbbbined",
+			Sex:          "female",
+			Status:       "carrion",
+			MotherSeries: "3",
+			Breed:        "RW",
+		}, {
+			OwnerId:      testUserId,
+			Series:       "3",
+			BirthDate:    time.Date(2000, 12, 3, 0, 0, 0, 0, time.UTC),
+			Species:      "",
+			UtilityType:  "combined",
+			Sex:          "female",
+			Status:       "carrion",
+			MotherSeries: "3",
+			Breed:        "RW",
+		},
+		{
+			OwnerId:      testUserId,
+			Series:       "3",
+			BirthDate:    time.Date(2000, 12, 3, 0, 0, 0, 0, time.UTC),
+			Species:      "cattle",
+			UtilityType:  "",
+			Sex:          "female",
+			Status:       "carrion",
+			MotherSeries: "3",
+			Breed:        "RW",
+		}, {
+			OwnerId:      testUserId,
+			Series:       "3",
+			BirthDate:    time.Date(2000, 12, 3, 0, 0, 0, 0, time.UTC),
+			Species:      "cattle",
+			UtilityType:  "combined",
+			Sex:          "",
+			Status:       "carrion",
+			MotherSeries: "3",
+			Breed:        "RW",
+		}, {
+			OwnerId:      testUserId,
+			Series:       "3",
+			BirthDate:    time.Date(2000, 12, 3, 0, 0, 0, 0, time.UTC),
+			Species:      "cattle",
+			UtilityType:  "combined",
+			Sex:          "female",
+			Status:       "",
+			MotherSeries: "3",
+			Breed:        "RW",
+		},
+		{
+			OwnerId:      testUserId,
+			Series:       "3",
+			BirthDate:    time.Date(2000, 12, 3, 0, 0, 0, 0, time.UTC),
+			Species:      "pig",
+			UtilityType:  "commbbbined",
+			Sex:          "female",
+			Status:       "carrion",
+			MotherSeries: "",
+			Breed:        "RW",
+		},
+		{
+			OwnerId:      testUserId,
+			Series:       "3",
+			BirthDate:    time.Date(2000, 12, 3, 0, 0, 0, 0, time.UTC),
+			Species:      "pig",
+			UtilityType:  "commbbbined",
+			Sex:          "female",
+			Status:       "carrion",
+			MotherSeries: "3",
+			Breed:        "",
+		}, {
+			OwnerId:      testUserId,
+			Series:       "3",
+			BirthDate:    time.Date(2000, 12, 3, 0, 0, 0, 0, time.UTC),
+			Species:      "cattle",
+			UtilityType:  "commbbbined",
+			Sex:          "haha",
+			Status:       "carrion",
+			MotherSeries: "3",
+			Breed:        "RW",
+		},
+		{
+			OwnerId:      testUserId,
+			Series:       "3@#",
+			BirthDate:    time.Date(2000, 12, 3, 0, 0, 0, 0, time.UTC),
+			Species:      "piig",
+			UtilityType:  "commbbbined",
+			Sex:          "female",
+			Status:       "carrion",
+			MotherSeries: "3",
+			Breed:        "RW",
+		}, {
+			OwnerId:      testUserId,
+			Series:       "3",
+			BirthDate:    time.Date(2000, 12, 3, 0, 0, 0, 0, time.UTC),
+			Species:      "",
+			UtilityType:  "commbbbined",
+			Sex:          "female",
+			Status:       "carrion",
+			MotherSeries: "3!@##!",
+			Breed:        "RW",
+		},
+	}
+
+	defer c.DeleteMany(ctx, bson.M{"ownerId": testUserId})
+	for i := 0; i < len(testCases); i++ {
+		_, err := s.AddNewAnimal(ctx, testCases[i])
+		exp := "validation error"
+
+		if err.Error() != exp {
+			t.Errorf("Wrong error!\nExpected: %+v\nReceived: %+v\n", exp, err)
+		}
+	}
+}
+func TestAddNewAnimalWithValidInputReturnCreatedAnimal(t *testing.T) {
+	s, c := config()
+	ctx := context.Background()
+
+	testUserId, _ := primitive.ObjectIDFromHex("0")
+	testCases := []models.Animal{
+		{
+			OwnerId:      testUserId,
+			Series:       "1",
+			BirthDate:    time.Date(2019, 10, 3, 0, 0, 0, 0, time.UTC),
+			Species:      "pig",
+			UtilityType:  "milk",
+			Sex:          "female",
+			Status:       "sold",
+			MotherSeries: "1",
+			Breed:        "MM",
+		}, {
+			OwnerId:      testUserId,
+			Series:       "2",
+			BirthDate:    time.Date(2010, 12, 3, 0, 0, 0, 0, time.UTC),
+			Species:      "cattle",
+			UtilityType:  "meat",
+			Sex:          "male",
+			Status:       "current",
+			MotherSeries: "2",
+			Breed:        "SM",
+		}, {
+			OwnerId:      testUserId,
+			Series:       "3",
+			BirthDate:    time.Date(2000, 12, 3, 0, 0, 0, 0, time.UTC),
+			Species:      "cattle",
+			UtilityType:  "combined",
+			Sex:          "female",
+			Status:       "carrion",
+			MotherSeries: "3",
+			Breed:        "RW",
+		},
+	}
+
+	exp := []models.AnimalRequest{
+		{
+			Series:       "1",
+			BirthDate:    "2019-10-03",
+			Species:      "pig",
+			UtilityType:  "milk",
+			Sex:          "female",
+			Status:       "sold",
+			MotherSeries: "1",
+			Breed:        "MM",
+		}, {
+			Series:       "2",
+			BirthDate:    "2010-12-03",
+			Species:      "cattle",
+			UtilityType:  "meat",
+			Sex:          "male",
+			Status:       "current",
+			MotherSeries: "2",
+			Breed:        "SM",
+		}, {
+			Series:       "3",
+			BirthDate:    "2000-12-03",
+			Species:      "cattle",
+			UtilityType:  "combined",
+			Sex:          "female",
+			Status:       "carrion",
+			MotherSeries: "3",
+			Breed:        "RW",
+		},
+	}
+	if len(testCases) != len(exp) {
+		t.Fatal("Numbers of test cases and expectations are not equal!")
+	}
+
+	defer c.DeleteMany(ctx, bson.M{"ownerId": testUserId})
+	for i := 0; i < len(testCases); i++ {
+		res, err := s.AddNewAnimal(ctx, testCases[i])
+
+		if err != nil {
+			t.Errorf("Wrong error!\nExpected: <nil>\nReceived: %+v\n", err)
+		}
+		if res != exp[i] {
+			t.Errorf("Wrong result!\nExpected: %+v\nReceived: %+v\n\n", exp[i], res)
+		}
+	}
+}
+
 func config() (*Service, *mongo.Collection) {
 	str1 := os.Getenv("MONGO_URL")
 	if str1 == "" {

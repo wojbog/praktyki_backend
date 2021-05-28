@@ -4,16 +4,13 @@ import (
 	"context"
 	"time"
 
+	"github.com/go-playground/validator"
 	"github.com/mitchellh/mapstructure"
-	log "github.com/sirupsen/logrus"
 	"github.com/wojbog/praktyki_backend/models"
 	"github.com/wojbog/praktyki_backend/repository/animals"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-//GetAnimals returns array of filter.ownerId's animals.
-//It converts models.AnimalFilters to compatible with db map with filters
-//If no animals return null
 type Service struct {
 	animalsCol *animals.Collection
 }
@@ -22,6 +19,19 @@ func NewService(animalsCol *animals.Collection) *Service {
 	return &Service{animalsCol}
 }
 
+///////Errors
+
+type ValidationError struct {
+	InvalidFields []string `json:"invalidFields"`
+}
+
+func (e *ValidationError) Error() string {
+	return "validation error"
+}
+
+//GetAnimals returns array of filter.ownerId's animals.
+//It converts models.AnimalFilters to compatible with db map with filters
+//If no animals return null
 func (s *Service) GetAnimals(ctx context.Context, filter models.AnimalFilters) ([]models.Animal, error) {
 	const layoutISO = "2006-01-02"
 
@@ -45,10 +55,22 @@ func (s *Service) GetAnimals(ctx context.Context, filter models.AnimalFilters) (
 		"$lt":  maxDate,
 	}
 
-	if animals, err := s.animalsCol.GetAnimals(ctx, mapFilter); err != nil {
-		log.Info(err.Error())
-		return nil, err
-	} else {
-		return animals, nil
+	animals, err := s.animalsCol.GetAnimals(ctx, mapFilter)
+	return animals, err
+}
+
+//AddNewAnimal
+//Validate animal and call insertAnimal
+func (s *Service) AddNewAnimal(ctx context.Context, animal models.Animal) (models.AnimalRequest, error) {
+	validate := validator.New()
+	if err := validate.Struct(animal); err != nil {
+		var TabErrors []string
+		for _, err := range err.(validator.ValidationErrors) {
+			TabErrors = append(TabErrors, err.Field())
+		}
+		return models.AnimalRequest{}, &ValidationError{InvalidFields: TabErrors}
 	}
+
+	animalRes, err := s.animalsCol.InsertAnimal(ctx, animal)
+	return animalRes, err
 }

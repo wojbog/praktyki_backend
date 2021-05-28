@@ -48,6 +48,7 @@ func TestGetAnimalsWithInvalidJwtReturnsUnathorized(t *testing.T) {
 	app := fiber.New()
 	app.Use(jwtware.New(jwtware.Config{
 		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
+			//weird status to distinguish handler error from middleware error
 			return ctx.Status(510).JSON(fiber.Map{
 				"error": "wrong call",
 			})
@@ -66,7 +67,7 @@ func TestGetAnimalsWithInvalidJwtReturnsUnathorized(t *testing.T) {
 
 }
 func TestGetAnimals(t *testing.T) {
-	s, c := ConfigAnimals()
+	s, c := configAnimals()
 
 	salt := "sol"
 	testUserId, _ := primitive.ObjectIDFromHex("0")
@@ -176,7 +177,7 @@ func TestGetAnimals(t *testing.T) {
 	}
 }
 
-func ConfigAnimals() (*animalsService.Service, *mongo.Collection) {
+func configAnimals() (*animalsService.Service, *mongo.Collection) {
 	str1 := os.Getenv("MONGO_URL")
 	if str1 == "" {
 		log.Fatal("NO MONGO URL")
