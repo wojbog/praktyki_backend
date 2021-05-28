@@ -32,7 +32,7 @@ func getTestToken(id string, salt string) string {
 		log.Fatalf("Cannot create test JWT token: %s", err)
 	}
 	return token
-	// return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjE5Nzk4NTUsImlzcyI6IjYwYWQ3MmM1YjAyY2ViZDFiZGM3YTI2YyJ9.YQbwJsrY4jBW43Ca0UqqL8KGqE5e0YoMQSKho7Zvzx8"
+
 }
 
 func TestGetAnimalsWithInvalidJwtReturnsUnathorized(t *testing.T) {
@@ -59,7 +59,7 @@ func TestGetAnimalsWithInvalidJwtReturnsUnathorized(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}
-	//t.Fatal(res.Body)
+
 	if res.StatusCode != fiber.StatusUnauthorized {
 		t.Errorf("Bad Status!\nExpected:%v\nReceived:%v", fiber.StatusUnauthorized, res.Status)
 	}

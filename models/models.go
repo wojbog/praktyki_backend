@@ -42,29 +42,16 @@ type User struct {
 	Post_code string             `json:"post_code" `
 }
 
-// type AnimalWithId struct {
-// 	Id           primitive.ObjectID `bson:"_id" json:"id,omitempty"`
-// 	OwnerId      primitive.ObjectID `json:"ownerId"`
-// 	Series       string             `json:"series" `
-// 	BirthDate    time.Time          `json:"birthDate" `
-// 	Species      string             `json:"species"`
-// 	UtilityType  string             `json:"utilityType"`
-// 	Sex          string             `json:"sex"`
-// 	Status       string             `json:"status"`
-// 	MotherSeries string             `json:"motherSeries"`
-// 	Breed        string             `json:"breed"`
-// }
-
 type Animal struct {
 	OwnerId      primitive.ObjectID `bson:"ownerId" json:"ownerId"`
-	Series       string             `bson:"series" json:"series" validate:"required,aplhanum"`
-	BirthDate    time.Time          `bson:"birthDate" json:"birthDate" validate:"required,numeric"`
-	Species      string             `bson:"species" json:"species" validate:"required,alpha"`
-	UtilityType  string             `bson:"utilityType" json:"utilityType" validate:"required,utility_type"`
-	Sex          string             `bson:"sex" json:"sex" validate:"required,gender"`
+	Series       string             `bson:"series" json:"series" validate:"required"`
+	BirthDate    time.Time          `bson:"birthDate" json:"birthDate" validate:"required"`
+	Species      string             `bson:"species" json:"species" validate:"required"`
+	UtilityType  string             `bson:"utilityType" json:"utilityType" validate:"required"`
+	Sex          string             `bson:"sex" json:"sex" validate:"required"`
 	Status       string             `bson:"status" json:"status" validate:"required"`
 	MotherSeries string             `bson:"motherSeries" json:"motherSeries" validate:"required"`
-	Breed        string             `bson:"breed" json:"breed" validate:"required,alpha"`
+	Breed        string             `bson:"breed" json:"breed" validate:"required"`
 }
 
 type AnimalRequest struct {
@@ -82,7 +69,7 @@ type AnimalFilters struct {
 	OwnerId      primitive.ObjectID `bson:"ownerId" json:"ownerId" mapstructure:"ownerId,omitempty"`
 	Series       string             `bson:"series,omitempty" json:"series" mapstructure:"series,omitempty"`
 	MinBirthDate string             `json:"minBirthDate" mapstructure:",omitempty"`
-	MaxBirthDate string             `json:":" mapstructure:",omitempty"`
+	MaxBirthDate string             `json:"maxBirthDate" mapstructure:",omitempty"`
 	Species      string             `bson:"species,omitempty" json:"species" mapstructure:"species,omitempty"`
 	Breed        string             `bson:"breed,omitempty" json:"breed" mapstructure:"breed,omitempty"`
 	Status       string             `bson:"status,omitempty" json:"status" mapstructure:"status,omitempty"`

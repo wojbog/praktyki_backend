@@ -114,6 +114,21 @@ func TestGetAnimals(t *testing.T) {
 		}
 	}
 }
+
+func TestDeleteAnimal(t *testing.T) {
+	c := config(t)
+	if err := c.DeleteAnimal(context.Background(), models.AnimalFilters{}); err != AnimalNotexist {
+		t.Error("no CanNotDeleteError")
+	}
+	id, _ := primitive.ObjectIDFromHex("1234")
+	p := models.Animal{OwnerId: id, Series: "147258369"}
+
+	c.col.InsertOne(context.Background(), p)
+	if err := c.DeleteAnimal(context.Background(), models.AnimalFilters{OwnerId: id, Series: "147258369"}); err != nil {
+		t.Error("can not delete")
+	}
+}
+
 func config(t *testing.T) *Collection {
 	str1 := os.Getenv("MONGO_URL")
 	if str1 == "" {

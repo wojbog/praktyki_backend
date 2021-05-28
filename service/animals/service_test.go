@@ -121,6 +121,22 @@ func TestGetAnimals(t *testing.T) {
 	}
 }
 
+
+func TestDeleteAnimal(t *testing.T){
+	s,c:=config()
+	if err:=s.DeleteAnimal(context.Background(),models.AnimalFilters{}); err!=animals.CanNotDeleteError {
+		t.Error("no CanNotDeleteError")
+	}
+	id,_:=primitive.ObjectIDFromHex("1234")
+	p:=models.Animal{OwnerId: id,Series: "147258369"}
+
+
+	c.InsertOne(context.Background(),p)
+	if err:=s.DeleteAnimal(context.Background(),models.AnimalFilters{OwnerId: id,Series:"147258369"}); err!=nil {
+		t.Error("can not delete")
+	}
+}
+
 func config() (*Service, *mongo.Collection) {
 	str1 := os.Getenv("MONGO_URL")
 	if str1 == "" {
