@@ -10,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+//DeleteAnimal handle endpoint deleteAnimal
 func DeleteAnimal(s *animalsService.Service) func(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
 

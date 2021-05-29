@@ -17,28 +17,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// import (
-// 	"context"
-// 	"encoding/json"
-// 	"log"
-// 	"net/http"
-// 	"os"
-// 	"reflect"
-// 	"testing"
-// 	"time"
-
-// 	"github.com/form3tech-oss/jwt-go"
-// 	"github.com/gofiber/fiber/v2"
-// 	jwtware "github.com/gofiber/jwt/v2"
-// 	"github.com/wojbog/praktyki_backend/models"
-// 	"github.com/wojbog/praktyki_backend/repository/animals"
-// 	animalsService "github.com/wojbog/praktyki_backend/service/animals"
-// 	"go.mongodb.org/mongo-driver/bson"
-// 	"go.mongodb.org/mongo-driver/bson/primitive"
-// 	"go.mongodb.org/mongo-driver/mongo"
-// 	"go.mongodb.org/mongo-driver/mongo/options"
-// )
-
 func TestCreateAnimalsWithInvalidJwtReturnsUnathorized(t *testing.T) {
 	salt := "soli!"
 	jwt := getTestToken("qqqqqqwwwwwwr", salt)
@@ -193,7 +171,6 @@ func TestCreateAnimalsWithValidationErrorReturnBadRequest(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}
-	//t.Fatal(res.Body)
 	if res.StatusCode != fiber.StatusBadRequest {
 		t.Errorf("Bad Status!\nExpected:%v\nReceived:%v", fiber.StatusBadRequest, res.Status)
 	}

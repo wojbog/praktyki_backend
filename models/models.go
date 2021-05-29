@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 
+	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -60,7 +61,6 @@ func Animal2Request(animal Animal) AnimalRequest {
 }
 
 func Request2Animal(req AnimalRequest, ownerId string) (Animal, error) {
-
 	var animal Animal
 	////converting ownerId
 	if primitiveOwnerId, err := primitive.ObjectIDFromHex(ownerId); err != nil && ownerId != "0" {
@@ -72,6 +72,7 @@ func Request2Animal(req AnimalRequest, ownerId string) (Animal, error) {
 	////converting date
 	const layoutISO = "2006-01-02"
 	if date, err := time.Parse(layoutISO, req.BirthDate); err != nil {
+		log.Info(err.Error())
 		return Animal{}, errors.New("cannot parse date")
 
 	} else {

@@ -85,3 +85,12 @@ func (s *Service) DeleteAnimal(ctx context.Context, filter models.AnimalFilters)
 	}
 	return nil
 }
+
+//UpdateAnimal return error if UpdateAnimal in repository return error
+func (s *Service) UpdateAnimal(ctx context.Context, animal models.Animal) error {
+
+	if err := s.animalsCol.UpdateAnimal(ctx, animal); err != nil {
+		return err
+	}
+	return nil
+}

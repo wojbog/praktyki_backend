@@ -254,6 +254,22 @@ func TestInsertAnimalsWithUniqueAnimalInserAnimal(t *testing.T) {
 
 }
 
+func TestUpadateAnimal(t*testing.T){
+	c:=config(t)
+	if err := c.UpdateAnimal(context.Background(), models.Animal{}); err != AnimalNotexist {
+		t.Error("no AnimalNotexist")
+	}
+	id, _ := primitive.ObjectIDFromHex("1234")
+	p := models.Animal{OwnerId: id, Series: "147258369"}
+
+	c.col.InsertOne(context.Background(), p)
+	if err := c.UpdateAnimal(context.Background(), models.Animal{OwnerId: id, Series: "147258369"}); err != nil {
+		t.Error("can not update")
+	}
+	c.col.DeleteOne(context.Background(), bson.M{"ownerId":p.OwnerId,"series":p.Series})
+}
+
+
 func config(t *testing.T) *Collection {
 	str1 := os.Getenv("MONGO_URL")
 	if str1 == "" {

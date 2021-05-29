@@ -46,4 +46,6 @@ func Routing(app *fiber.App, uSer *userService.Service, aSer *animalsService.Ser
 	//deleteAnimal endpoint delete animal
 	app.Post("/deleteAnimal", handlers.DeleteAnimal(aSer))
 
+	app.Post("/updateAnimal",handlers.UpdateAnimal(aSer))
+
 }

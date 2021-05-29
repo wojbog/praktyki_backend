@@ -123,8 +123,8 @@ func TestGetAnimals(t *testing.T) {
 
 func TestDeleteAnimal(t *testing.T) {
 	s, c := config()
-	if err := s.DeleteAnimal(context.Background(), models.AnimalFilters{}); err != animals.CanNotDeleteError {
-		t.Error("no CanNotDeleteError")
+	if err := s.DeleteAnimal(context.Background(), models.AnimalFilters{}); err != animals.AnimalNotexist {
+		t.Error("no AnimalNotexist")
 	}
 	id, _ := primitive.ObjectIDFromHex("1234")
 	p := models.Animal{OwnerId: id, Series: "147258369"}
@@ -134,6 +134,22 @@ func TestDeleteAnimal(t *testing.T) {
 		t.Error("can not delete")
 	}
 }
+
+func TestUpdateAnimal(t *testing.T) {
+	s, c := config()
+	if err := s.UpdateAnimal(context.Background(), models.Animal{}); err != animals.AnimalNotexist {
+		t.Error("no AnimalNotexist")
+	}
+	id, _ := primitive.ObjectIDFromHex("1234")
+	p := models.Animal{OwnerId: id, Series: "147258369"}
+
+	c.InsertOne(context.Background(), p)
+	if err := s.UpdateAnimal(context.Background(), models.Animal{OwnerId: id, Series: "147258369"}); err != nil {
+		t.Error("can not update")
+	}
+	c.DeleteOne(context.Background(), bson.M{"ownerId": p.OwnerId, "series": p.Series})
+}
+
 func TestAddNewAnimalWithInvalidInputReturnValidationError(t *testing.T) {
 	s, c := config()
 	ctx := context.Background()

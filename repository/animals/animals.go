@@ -13,16 +13,14 @@ import (
 var (
 	AnimalExistsError   = errors.New("animal exists")
 	InternalServerError = errors.New("internal server error")
+	CanNotDeleteError = errors.New("can not delete")
+	AnimalNotexist    = errors.New("animal not exists")
 )
 
 type Collection struct {
 	col *mongo.Collection
 }
 
-var (
-	CanNotDeleteError = errors.New("can not delete")
-	AnimalNotexist    = errors.New("animal not exists")
-)
 
 func NewCollection(col *mongo.Collection) *Collection {
 	return &Collection{col}
@@ -53,7 +51,7 @@ func (colAnim *Collection) DeleteAnimal(ctx context.Context, filter models.Anima
 	} else if result.DeletedCount == 0 {
 		return AnimalNotexist
 	} else {
-		log.Info("delete animal ownerid:" + filter.OwnerId.Hex() + " series: " + filter.Series)
+		log.Info("deleted animal ownerid:" + filter.OwnerId.Hex() + " series: " + filter.Series)
 		return nil
 	}
 }
@@ -72,17 +70,29 @@ func (colAnim *Collection) InsertAnimal(ctx context.Context, animal models.Anima
 
 	res, err := colAnim.col.InsertOne(ctx, animal)
 	if err != nil {
-		log.Info("err insss")
 		return models.AnimalRequest{}, InternalServerError
 	}
 
 	a := new(models.Animal)
 	if err := colAnim.col.FindOne(ctx, bson.M{"_id": res.InsertedID}).Decode(a); err != nil {
-		log.Info("err fioooafter")
 		log.Info(err)
 		return models.AnimalRequest{}, InternalServerError
 	}
 
 	return models.Animal2Request(*a), nil
+
+}
+
+func (colAnim *Collection) UpdateAnimal(ctx context.Context, animal models.Animal) error {
+
+	if result,err:=colAnim.col.ReplaceOne(ctx,bson.M{"ownerId":animal.OwnerId,"series":animal.Series},animal);err!=nil{
+		return InternalServerError
+	} else if result.MatchedCount==0 {
+		return AnimalNotexist
+	} else {
+		log.Info("updated animal ownerid:" + animal.OwnerId.Hex() + " series: " + animal.Series)
+		return nil
+	}
+	
 
 }

@@ -145,8 +145,6 @@ func TestGetAnimals(t *testing.T) {
 		}
 		req.URL.RawQuery = q.Encode()
 
-		t.Log(req.URL.Query())
-
 		app := fiber.New()
 		app.Use(jwtware.New(jwtware.Config{
 			SigningKey: []byte(salt),
