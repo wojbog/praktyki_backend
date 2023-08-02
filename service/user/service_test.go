@@ -193,12 +193,10 @@ func config() (*Service, *mongo.Collection) {
 	DatabseName := datebasename
 	db := client.Database(DatabseName)
 
-	col := *db.Collection("users")
-
-	userCol := user.NewCollection(&col)
+	ucol := *db.Collection("users")
+	userCol := user.NewCollection(&ucol)
 
 	s := NewService(userCol)
 
-	return s, &col
-
+	return s, &ucol
 }

@@ -10,11 +10,11 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/wojbog/praktyki_backend/models"
 	"github.com/wojbog/praktyki_backend/repository/user"
-	"github.com/wojbog/praktyki_backend/service"
+	userService "github.com/wojbog/praktyki_backend/service/user"
 )
 
 //LoginUser endpoint login
-func LoginUser(s *service.Service) func(c *fiber.Ctx) error {
+func LoginUser(s *userService.Service) func(c *fiber.Ctx) error {
 
 	return func(c *fiber.Ctx) error {
 
@@ -29,7 +29,7 @@ func LoginUser(s *service.Service) func(c *fiber.Ctx) error {
 		}
 		//check in datebase and create token
 		if us, err := s.LoginUser(c.Context(), p); err != nil {
-			if err == service.IncorrectPasswordError || err == user.UserNotFoundError {
+			if err == userService.IncorrectPasswordError || err == user.UserNotFoundError {
 				return c.Status(400).JSON(&fiber.Map{
 					"success": false,
 					"error":   "incorrect password or email"})

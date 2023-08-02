@@ -18,6 +18,11 @@ type Service struct {
 	userCol *user.Collection
 }
 
+//NewService create new service
+func NewService(userCol *user.Collection) *Service {
+	return &Service{userCol}
+}
+
 //ValidationError contains array of invalid fields
 type ValidationError struct {
 	InvalidFields []string
@@ -72,16 +77,9 @@ func (s *Service) LoginUser(ctx context.Context, user models.User) (models.User,
 
 			return models.User{}, IncorrectPasswordError
 		} else {
-			return user, nil
+			return userDB, nil
 		}
-
 	}
-
-}
-
-//NewService create new service
-func NewService(col *user.Collection) *Service {
-	return &Service{col}
 }
 
 //validatePostCode validate PosteCode, correct format: 00-000

@@ -7,27 +7,29 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	log "github.com/sirupsen/logrus"
+	"github.com/wojbog/praktyki_backend/repository/animals"
+	"github.com/wojbog/praktyki_backend/repository/user"
 	"github.com/wojbog/praktyki_backend/server"
+	animalsService "github.com/wojbog/praktyki_backend/service/animals"
+	userService "github.com/wojbog/praktyki_backend/service/user"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"github.com/wojbog/praktyki_backend/repository/user"
-	"github.com/wojbog/praktyki_backend/service"
 )
 
 func main() {
-	
+
 	app := fiber.New()
 
-	str1:=os.Getenv("MONGO_URL")
-	if str1 ==""{
+	str1 := os.Getenv("MONGO_URL")
+	if str1 == "" {
 		log.Fatal("NO MONGO URL")
 	}
-	str2:=os.Getenv("MONGO_DB")
-	if str2 ==""{
+	str2 := os.Getenv("MONGO_DB")
+	if str2 == "" {
 		log.Fatal("NO MONGO DB")
 	}
-	mongo_URL:=str1
-	datebasename:=str2
+	mongo_URL := str1
+	datebasename := str2
 
 	client, err := mongo.NewClient(options.Client().ApplyURI(mongo_URL))
 	if err != nil {
@@ -41,24 +43,23 @@ func main() {
 	} else {
 		log.Info("connect to DB")
 	}
-	DatabseName:=datebasename
+	DatabseName := datebasename
 	db := client.Database(DatabseName)
-	
-	col:=*db.Collection("users")
 
-	userCol:=user.NewCollection(&col)
+	userCol := user.NewCollection(db.Collection("users"))
 
-	s:=service.NewService(userCol)
+	animalsCol := animals.NewCollection(db.Collection("animals"))
 
-	server.Routing(app,s)
-	
-	
-	PORT:=os.Getenv("PORT")
+	uService := userService.NewService(userCol)
+	aService := animalsService.NewService(animalsCol)
+
+	server.Routing(app, uService, aService)
+
+	PORT := os.Getenv("PORT")
 	if PORT != "" {
-		app.Listen(":"+PORT)
+		app.Listen(":" + PORT)
 	} else {
 		log.Panic("NO PORT")
 	}
-	
-	
+
 }
